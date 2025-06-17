@@ -3,6 +3,7 @@ import './App.css';
 import Header from './components/Header';
 import Home from './pages/Home';
 import { FaWeight } from 'react-icons/fa';
+import Footer from './components/Footer';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
@@ -68,6 +69,7 @@ function App() {
     <div className="app-wrapper">
       <Header user={user} onLogout={logout} />
       <Home user={user} />
+      <Footer/>
     </div>
   );
 }

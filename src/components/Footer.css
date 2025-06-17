@@ -1,0 +1,34 @@
+.footer {
+  width: 100%;
+  background-color: #002244;
+  padding: 1rem 2rem;
+  box-shadow: 0 -1px 4px rgba(0,0,0,0.1);
+}
+
+.footer-links-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-links-left a,
+.footer-links-right a {
+  margin: 0 0.75rem;
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
+}
+
+.footer-links-right {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.footer-copy {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 13px;
+  color: white;
+}

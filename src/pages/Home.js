@@ -7,17 +7,12 @@ const Home = ({ user }) => {
     <div className="home-layout">
       {!user ? (
         <>
-          <header className="page-header">
-            <div className="header-logo">Nominee Notify</div>
-            <div id="google-button" className="google-login-btn header-login-btn" />
-          </header>
-
-          {/* Hero Section */}
           <section className="hero">
             <div className="left-illustration">
               <img
-                src="https://www.svgrepo.com/show/452088/insurance.svg"
+                src="/insurance.svg"
                 alt="Insurance Illustration"
+                style={{ width: '160px', height: 'auto' }}
               />
             </div>
             <div className="hero-text">
@@ -83,7 +78,9 @@ const Home = ({ user }) => {
             <div className="trust-highlights">
               <div>✅ Zero Data Sharing</div>
               <div>✅ Verified Platform</div>
-              <div>✅ Always Free for Users</div>
+              <div>✅ End-to-End Encryption</div>
+              <div>✅ Real-Time Notifications</div>
+              <div>✅ Secure Cloud Storage</div>
             </div>
           </section>
 
