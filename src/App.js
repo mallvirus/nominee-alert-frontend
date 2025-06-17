@@ -4,6 +4,9 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import { FaWeight } from 'react-icons/fa';
 import Footer from './components/Footer';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
@@ -66,11 +69,19 @@ function App() {
   };
 
   return (
-    <div className="app-wrapper">
-      <Header user={user} onLogout={logout} />
-      <Home user={user} />
-      <Footer/>
-    </div>
+    <Router>
+      <div className="app-wrapper">
+        <Header />
+        
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+        </Routes>
+        
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
