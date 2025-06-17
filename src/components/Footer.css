@@ -1,29 +1,39 @@
+/* components/Footer.css */
 .footer {
-  width: 100%;
+  width: 100%; /* With box-sizing: border-box; this is perfect */
   background-color: #002244;
   padding: 1rem 2rem;
   box-shadow: 0 -1px 4px rgba(0,0,0,0.1);
+  color: white; /* Ensure footer text is white */
 }
 
 .footer-links-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Allow links to wrap to next line if space is limited */
+  gap: 1rem; /* Space between link groups */
+}
+
+.footer-links-left,
+.footer-links-right {
+  display: flex;
+  flex-wrap: wrap; /* Allow individual links to wrap */
+  gap: 0.75rem; /* Space between links within a group */
 }
 
 .footer-links-left a,
 .footer-links-right a {
-  margin: 0 0.75rem;
   text-decoration: none;
   color: white;
   font-size: 14px;
+  white-space: nowrap; /* Prevent individual links from breaking words */
 }
 
-.footer-links-right {
-  display: flex;
-  align-items: center;
-  margin-top: 0.5rem;
+.footer-links-left a:hover,
+.footer-links-right a:hover {
+  text-decoration: underline;
+  color: #e0e0e0;
 }
 
 .footer-copy {
@@ -31,4 +41,14 @@
   margin-top: 1rem;
   font-size: 13px;
   color: white;
+}
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 1rem 1rem;
+  }
+  .footer-links-container {
+    flex-direction: column; /* Stack link groups vertically */
+    align-items: center;
+  }
 }

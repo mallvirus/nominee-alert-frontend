@@ -1,39 +1,52 @@
+/* components/Header.css */
 .header {
-  width: 100%;
+  width: 100%; /* With box-sizing: border-box; this is perfect */
   padding: 1rem 2rem;
   background-color: #002244;
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 60px; /* Give it a minimum height */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  /* min-width: 0; - This is not needed on the container itself if width: 100% is used with border-box */
 }
 
 .logo {
   font-size: 1.5rem;
   font-weight: 600;
+  flex-shrink: 1; /* Allow logo to shrink */
+  min-width: 0; /* Prevents logo from forcing horizontal scroll if text is too long and no wrapping */
+  white-space: nowrap; /* Prevent logo text from wrapping */
+  overflow: hidden; /* Hide overflow if it shrinks too much */
+  text-overflow: ellipsis; /* Add ellipsis if hidden */
 }
 
-.logout-button {
-  background-color: #ff4c4c;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Space between Google button and logout info */
+  flex-shrink: 0; /* Prevent auth section from shrinking if possible */
 }
 
-.logout-button:hover {
-  background-color: #cc0000;
+.google-button-wrapper {
+  /* No specific styles here needed if the Google JS renders it correctly.
+     The JS will toggle its display: block/none. */
+  /* Add min-width/height if the button isn't rendering consistently */
+  min-width: 100px; /* Based on renderButton width */
+  min-height: 40px; /* Approx height of large button */
 }
-.user-info {
-  text-align: right;
-  margin-right: 1rem;
+
+.user-info-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between name and logout */
 }
 
 .user-name {
   font-size: 14px;
   color: white;
-  margin-bottom: 4px;
+  margin-bottom: 0; /* Remove default margin from div/p if it causes issues */
 }
 
 .logout-link {
@@ -41,9 +54,23 @@
   color: white;
   cursor: pointer;
   text-decoration: none;
+  transition: color 0.2s ease-in-out;
 }
 
 .logout-link:hover {
-  color: white;
+  color: #e0e0e0; /* Lighter white on hover */
+  text-decoration: underline;
 }
 
+/* Consider a media query for smaller screens if items overlap */
+@media (max-width: 600px) {
+  .header {
+    padding: 1rem 1rem; /* Reduce padding on smaller screens */
+  }
+  .logo {
+    font-size: 1.2rem;
+  }
+  .auth-section {
+    gap: 0.5rem;
+  }
+}

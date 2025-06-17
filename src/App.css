@@ -1,3 +1,14 @@
+/* App.css */
+
+/* --- GLOBAL RESET --- */
+html {
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+/* -------------------- */
+
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -8,42 +19,24 @@ body {
 .app-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
   min-height: 100vh;
+  /* Remove align-items: center here if you want content to stretch full width,
+     then center individual content blocks as needed.
+     If you keep it, ensure your main content areas have a max-width. */
 }
 
-.header {
-  width: 100%;
-  padding: 1rem 2rem;
-  background: #002244;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.logout-button {
-  background: #ff4c4c;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.logout-button:hover {
-  background: #cc0000;
-}
-
+/* Home Page specific styles */
 .home-container {
   padding: 3rem;
   text-align: center;
-  max-width: 700px;
+  max-width: 700px; /* Constrain max width for content */
+  width: 100%; /* Ensure it takes full width up to max-width */
+  margin: 0 auto; /* Center it */
+  flex-grow: 1; /* Allows home content to push footer down */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content within the home container */
+  justify-content: center; /* Vertically center if needed */
 }
 
 .intro-section {
@@ -51,6 +44,7 @@ body {
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 0 15px rgba(0,0,0,0.05);
+  width: 100%; /* Ensure it respects parent width */
 }
 
 .title {
@@ -69,6 +63,8 @@ body {
   background: #e8f0fe;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0,0,0,0.04);
+  width: 100%; /* Ensure it respects parent width */
+  margin-top: 2rem; /* Add some space if it's below intro */
 }
 
 .highlight {
