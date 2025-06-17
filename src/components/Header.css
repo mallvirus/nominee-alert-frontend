@@ -25,3 +25,25 @@
 .logout-button:hover {
   background-color: #cc0000;
 }
+.user-info {
+  text-align: right;
+  margin-right: 1rem;
+}
+
+.user-name {
+  font-size: 14px;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.logout-link {
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.logout-link:hover {
+  color: white;
+}
+

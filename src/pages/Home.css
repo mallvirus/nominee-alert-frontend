@@ -167,9 +167,7 @@ body {
   .left-illustration img {
     max-width: 100%;
   }
-  .login-wrap {
-    justify-content: center;
-  }
+
   .trust-highlights {
     flex-direction: column;
     gap: 0.5rem;

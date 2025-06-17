@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './App.css';
 import Header from './components/Header';
 import Home from './pages/Home';
-import { FaWeight } from 'react-icons/fa';
 import Footer from './components/Footer';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
@@ -12,6 +11,7 @@ const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 function App() {
   const [user, setUser] = useState(null);
+  const googleButtonRef = useRef(null); // ✅ Reference for the Google Sign-In button
 
   const handleGoogleResponse = async (response) => {
     const base64Url = response.credential.split('.')[1];
@@ -39,6 +39,7 @@ function App() {
     }
   };
 
+  // ✅ Show Google button when no user
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
@@ -46,39 +47,45 @@ function App() {
       return;
     }
 
-    window.google?.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleResponse,
-    });
+    if (!user && window.google && googleButtonRef.current) {
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+      });
 
-      window.google?.accounts.id.renderButton(
-      document.getElementById('google-button'),
-      {
-       theme: 'filled_blue',
-    size: 'large',
-    width: 100,
-    text: 'signin',  
-    shape: 'pill',
-      }
-    );
-  }, []);
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'filled_blue',
+        size: 'large',
+        width: 100,
+        text: 'signin',
+        shape: 'pill',
+      });
+    }
+  }, [user]);
 
   const logout = () => {
     localStorage.clear();
-    setUser(null);
+    setUser(null); // ✅ This will trigger useEffect to re-render Google button
   };
 
   return (
     <Router>
       <div className="app-wrapper">
-        <Header />
-        
+        <Header user={user} onLogout={logout} />
+
+        {/* 👇 Conditionally render Google Sign-In button */}
+        {!user && (
+          <div style={{ textAlign: 'right', margin: '1rem' }}>
+            <div ref={googleButtonRef} id="google-button"></div>
+          </div>
+        )}
+
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home user={user} />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
         </Routes>
-        
+
         <Footer />
       </div>
     </Router>
