@@ -158,6 +158,41 @@ body {
 .highlight {
   color: var(--primary);
 }
+.nominee-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.nominee-btn {
+  padding: 0.65rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.nominee-btn.view {
+   background-color: #1d72b8;
+  color: #fff;
+}
+
+.nominee-btn.view:hover {
+  background-color: #155d94;
+}
+
+.nominee-btn.add {
+  background-color: #1d72b8;
+  color: #fff;
+}
+
+.nominee-btn.add:hover {
+  background-color: #155d94;
+}
+
 
 @media (max-width: 768px) {
   .hero {

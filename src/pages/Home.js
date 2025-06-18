@@ -24,9 +24,12 @@ const Home = ({ user }) => {
               <div className="login-wrap">
                 <div id="google-button" className="google-login-btn" />
               </div>
+               <div className="nominee-buttons">
+                  <button className="nominee-btn view">View Nominee</button>
+                  <button className="nominee-btn add">Add Nominee</button>
+            </div>
             </div>
           </section>
-
           {/* How It Works */}
           <section className="how-it-works">
             <h2>How It Works</h2>
