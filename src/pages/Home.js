@@ -1,12 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Home.css';
 import { FaShieldAlt, FaUserCheck, FaLock, FaRocket, FaCheckCircle } from 'react-icons/fa';
+import { useGoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
-const Home = ({ user }) => {
+const Home = () => {
+  const [user, setUser] = useState(null);
+
+  const login = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      const decoded = jwtDecode(tokenResponse.credential);
+      setUser({
+        name: decoded.name,
+        email: decoded.email,
+      });
+      console.log("User:", decoded);
+    },
+    onError: () => {
+      console.log("Login Failed");
+    },
+    flow: 'implicit',
+  });
+
+  const handleActionClick = () => {
+    login(); // directly opens Google Sign-In popup
+  };
+
   return (
     <div className="home-layout">
       {!user ? (
         <>
+          {/* === HERO SECTION === */}
           <section className="hero">
             <div className="left-illustration">
               <img
@@ -21,16 +45,14 @@ const Home = ({ user }) => {
               <p>
                 Upload your policies, assign nominees, and rest assured they’ll be informed when it matters most.
               </p>
-              <div className="login-wrap">
-                <div id="google-button" className="google-login-btn" />
+              <div className="nominee-buttons">
+                <button onClick={handleActionClick}>View Nominee</button>
+                <button onClick={handleActionClick}>Add Nominee</button>
               </div>
-               <div className="nominee-buttons">
-                  <button className="nominee-btn view">View Nominee</button>
-                  <button className="nominee-btn add">Add Nominee</button>
-            </div>
             </div>
           </section>
-          {/* How It Works */}
+
+          {/* === HOW IT WORKS === */}
           <section className="how-it-works">
             <h2>How It Works</h2>
             <div className="steps">
@@ -52,7 +74,7 @@ const Home = ({ user }) => {
             </div>
           </section>
 
-          {/* Features */}
+          {/* === FEATURES === */}
           <section className="features">
             <h2>Features You’ll Love</h2>
             <div className="features-grid">
@@ -74,7 +96,7 @@ const Home = ({ user }) => {
             </div>
           </section>
 
-          {/* Trust Section */}
+          {/* === TRUST SECTION === */}
           <section className="trust">
             <h2>Why People Trust Us</h2>
             <p className="trust-tagline">Built for transparency, backed by security. Trusted by families across India.</p>
@@ -87,13 +109,10 @@ const Home = ({ user }) => {
             </div>
           </section>
 
-          {/* CTA Section */}
+          {/* === CTA SECTION === */}
           <section className="cta">
             <h2>Get Started in 2 Minutes</h2>
             <p>It’s simple, secure and built for peace of mind.</p>
-            <div className="login-wrap">
-              <div id="google-button" className="google-login-btn" />
-            </div>
           </section>
         </>
       ) : (
