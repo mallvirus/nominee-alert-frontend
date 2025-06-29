@@ -212,35 +212,70 @@ body {
 .nominee-cards-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 1rem;
+  gap: 1.5rem;
 }
 
 .nominee-card {
-  width: 100%;
-  max-width: 320px;
-  border: 1px solid #ddd;
+  position: relative;
+  width: 280px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
   border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  background-color: #f9f9f9;
-  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px 16px 16px 16px;
+  transition: transform 0.2s ease;
 }
 
 .nominee-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
 }
 
-.nominee-card p {
-  margin: 8px 0;
+.delete-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #ff5c5c;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
 }
 
-.nominee-card a {
+.delete-icon:hover {
+  color: #d40000;
+}
+
+.nominee-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 20px; /* 👈 pushes all content down */
+}
+
+
+.nominee-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.value, .document-link {
+  font-size: 0.95rem;
+  color: #444;
+  text-align: right;
+  word-break: break-all;
+}
+
+.document-link {
   color: #007bff;
   text-decoration: none;
-  font-weight: 500;
 }
 
-.nominee-card a:hover {
+.document-link:hover {
   text-decoration: underline;
 }

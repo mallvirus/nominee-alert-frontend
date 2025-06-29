@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Home.css';
+import { FaTrash } from 'react-icons/fa';
 import { FaShieldAlt, FaUserCheck, FaLock, FaRocket, FaCheckCircle } from 'react-icons/fa';
 
 const Home = ({ user }) => {
   const [nominees, setNominees] = useState([]);
   useEffect(() => {
   if (user?.id) {
-    axios.get(`http://localhost:7001/api/nominees/find/by/UserId?userId=${user.id}`)
+    axios.get(`${process.env.REACT_APP_HOST_SERVER}/api/nominees/find/by/UserId?userId=${user.id}`)
       .then((response) => {
         setNominees(response.data.data);
       })
@@ -16,6 +17,17 @@ const Home = ({ user }) => {
       });
   }
 }, [user]);
+
+const handleRemove = async (nomineeId, policyId) => {
+    try {
+      await axios.delete(`${process.env.REACT_APP_HOST_SERVER}/api/nominees/${nomineeId}/policy/${policyId}`);
+      // Remove nominee from UI
+      setNominees(nominees.filter(nominee => nominee.nomineeId !== nomineeId));
+    } catch (error) {
+      console.error("Error removing nominee:", error);
+      alert("Failed to remove nominee. Please try again.");
+    }
+  };
   return (
     <div className="home-layout">
       {!user ? (
@@ -121,19 +133,34 @@ const Home = ({ user }) => {
     <div className="nominee-cards-container">
       {nominees.map((nominee) => (
         <div className="nominee-card" key={nominee.nomineeId}>
-          <p><strong>Email:</strong> {nominee.nomineeEmail}</p>
-          <p><strong>Phone:</strong> {nominee.nomineePhone}</p>
-          <p>
-            <strong>Document:</strong>{" "}
-            <a
-              href={`http://localhost:8080/${nominee.documentUrl}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Document
-            </a>
-          </p>
-        </div>
+  <FaTrash
+    className="delete-icon"
+    onClick={() => handleRemove(nominee.nomineeId, nominee.policyId)}
+    title="Delete Nominee"
+  />
+  <div className="nominee-info">
+    <div className="nominee-field">
+      <span className="label">Email:</span>
+      <span className="value">{nominee.nomineeEmail}</span>
+    </div>
+    <div className="nominee-field">
+      <span className="label">Phone:</span>
+      <span className="value">{nominee.nomineePhone}</span>
+    </div>
+    <div className="nominee-field">
+      <span className="label">Document:</span>
+      <a
+        className="document-link"
+        href={`http://localhost:8080/${nominee.documentUrl}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        View Document
+      </a>
+    </div>
+  </div>
+</div>
+
       ))}
     </div>
   ) : (
