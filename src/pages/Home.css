@@ -5,6 +5,7 @@
   --white: #ffffff;
   --gray-light: #f9fafb;
   --shadow: rgba(0, 0, 0, 0.1);
+  --error: #e74c3c;
 }
 
 body {
@@ -307,9 +308,13 @@ body {
   padding: 2rem;
   width: 90%;
   max-width: 500px;
-  margin: auto;
   border-radius: 10px;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 .modal-overlay {
@@ -319,6 +324,10 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 998;
 }
 
 .modal-form label {
@@ -334,6 +343,16 @@ body {
   margin-top: 0.4rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.input-error {
+  border-color: var(--error) !important;
+}
+
+.error-message {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
 }
 
 .modal-buttons {
