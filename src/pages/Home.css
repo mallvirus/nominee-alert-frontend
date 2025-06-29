@@ -208,3 +208,39 @@ body {
     gap: 0.5rem;
   }
 }
+
+.nominee-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 1rem;
+}
+
+.nominee-card {
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background-color: #f9f9f9;
+  transition: transform 0.2s ease-in-out;
+}
+
+.nominee-card:hover {
+  transform: translateY(-4px);
+}
+
+.nominee-card p {
+  margin: 8px 0;
+}
+
+.nominee-card a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nominee-card a:hover {
+  text-decoration: underline;
+}

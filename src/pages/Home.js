@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './Home.css';
 import { FaShieldAlt, FaUserCheck, FaLock, FaRocket, FaCheckCircle } from 'react-icons/fa';
 
 const Home = ({ user }) => {
+  const [nominees, setNominees] = useState([]);
+  useEffect(() => {
+  if (user?.id) {
+    axios.get(`http://localhost:7001/api/nominees/find/by/UserId?userId=${user.id}`)
+      .then((response) => {
+        setNominees(response.data.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching nominee data:', error);
+      });
+  }
+}, [user]);
   return (
     <div className="home-layout">
       {!user ? (
@@ -97,10 +110,36 @@ const Home = ({ user }) => {
           </section>
         </>
       ) : (
-        <section className="user-info-section">
-          <h2>Welcome, <span className="highlight">{user.name}</span> 👋</h2>
-          <p>Email: <strong>{user.email}</strong></p>
-        </section>
+        // <section className="user-info-section">
+        //   <h2>Welcome, <span className="highlight">{user.name}</span> 👋</h2>
+        //   <p>Email: <strong>{user.email}</strong></p>
+        //   <p>UserId: <strong>{user.id}</strong></p>
+        // </section>
+ <section className="user-info-section">
+  <h3>Your Nominees</h3>
+  {nominees.length > 0 ? (
+    <div className="nominee-cards-container">
+      {nominees.map((nominee) => (
+        <div className="nominee-card" key={nominee.nomineeId}>
+          <p><strong>Email:</strong> {nominee.nomineeEmail}</p>
+          <p><strong>Phone:</strong> {nominee.nomineePhone}</p>
+          <p>
+            <strong>Document:</strong>{" "}
+            <a
+              href={`http://localhost:8080/${nominee.documentUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Document
+            </a>
+          </p>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p>No nominees found.</p>
+  )}
+</section>
       )}
     </div>
   );
