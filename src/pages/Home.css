@@ -385,3 +385,79 @@ body {
   cursor: help;
   font-size: 0.9rem;
 }
+
+
+
+
+
+
+
+.add-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.add-icon {
+  font-size: 1.2rem;
+  color: #007bff;
+}
+
+.tooltip-icon {
+  margin-left: 6px;
+  color: #888;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.modal-form label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.modal-form input[type="text"],
+.modal-form input[type="email"],
+.modal-form input[type="tel"],
+.modal-form input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-form .input-error {
+  border-color: red;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.modal-buttons .add-btn,
+.modal-buttons .cancel-btn {
+  padding: 8px 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+.react-tooltip {
+  font-size: 0.75rem;
+  background-color: #222 !important;
+  color: #fff !important;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
