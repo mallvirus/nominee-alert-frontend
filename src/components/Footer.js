@@ -1,4 +1,4 @@
-import { FaLinkedin, FaFacebookF, FaTwitter } from "react-icons/fa";
+import { FaLinkedin, FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import './Footer.css'; // Make sure you import the CSS
 
 const Footer = () => {
@@ -10,6 +10,9 @@ const Footer = () => {
           <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
         </div>
         <div className="footer-links-right">
+          <a href="https://wa.me/918177009416" target="_blank" rel="noopener noreferrer">
+    <FaWhatsapp />
+  </a>
           <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
             <FaLinkedin />
           </a>
