@@ -1,61 +1,93 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Home.css';
-import { FaTrash } from 'react-icons/fa';
-import { FaShieldAlt, FaUserCheck, FaLock, FaRocket, FaCheckCircle } from 'react-icons/fa';
+import Modal from 'react-modal';
+import { Tooltip } from 'react-tooltip';
+import { FaTrash, FaPlus, FaInfoCircle, FaShieldAlt, FaUserCheck, FaLock, FaRocket, FaCheckCircle } from 'react-icons/fa';
+
+Modal.setAppElement('#root');
 
 const Home = ({ user }) => {
   const [nominees, setNominees] = useState([]);
-  useEffect(() => {
-  if (user?.id) {
-    axios.get(`${process.env.REACT_APP_HOST_SERVER}/api/nominees/find/by/UserId?userId=${user.id}`)
-      .then((response) => {
-        setNominees(response.data.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching nominee data:', error);
-      });
-  }
-}, [user]);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    nomineeEmail: '',
+    nomineePhone: '',
+    policyDocument: null,
+  });
 
-const handleRemove = async (nomineeId, policyId) => {
+  const fetchNominees = async () => {
+    if (user?.id) {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_HOST_SERVER}/api/nominees/find/by/UserId?userId=${user.id}`);
+        setNominees(response.data.data);
+      } catch (error) {
+        console.error('Error fetching nominee data:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchNominees();
+  }, [user]);
+
+  const handleRemove = async (nomineeId, policyId) => {
     try {
       await axios.delete(`${process.env.REACT_APP_HOST_SERVER}/api/nominees/${nomineeId}/policy/${policyId}`);
-      // Remove nominee from UI
       setNominees(nominees.filter(nominee => nominee.nomineeId !== nomineeId));
     } catch (error) {
       console.error("Error removing nominee:", error);
       alert("Failed to remove nominee. Please try again.");
     }
   };
+
+  const handleAddNominee = async (e) => {
+    e.preventDefault();
+    const { nomineeEmail, nomineePhone, policyDocument } = formData;
+    if (!nomineeEmail || !nomineePhone || !policyDocument) {
+      alert('All fields are required.');
+      return;
+    }
+
+    const payload = new FormData();
+    payload.append('nomineeEmail', nomineeEmail);
+    payload.append('nomineePhone', nomineePhone);
+    payload.append('userId', user.id);
+    payload.append('policyDocument', policyDocument);
+
+    try {
+      await axios.post(`${process.env.REACT_APP_HOST_SERVER}/api/nominees/create/via/file`, payload);
+      alert('Nominee added successfully!');
+      setModalOpen(false);
+      setFormData({ nomineeEmail: '', nomineePhone: '', policyDocument: null });
+      fetchNominees();
+    } catch (error) {
+      console.error('Error adding nominee:', error);
+      alert('Failed to add nominee.');
+    }
+  };
+
   return (
     <div className="home-layout">
       {!user ? (
         <>
           <section className="hero">
             <div className="left-illustration">
-              <img
-                src="/insurance.svg"
-                alt="Insurance Illustration"
-                style={{ width: '160px', height: 'auto' }}
-              />
+              <img src="/insurance.svg" alt="Insurance Illustration" style={{ width: '160px', height: 'auto' }} />
             </div>
             <div className="hero-text">
               <h1><FaShieldAlt className="icon" /> Secure Your Nominees</h1>
               <p className="tagline">If you love them, don’t leave them guessing.</p>
-              <p>
-                Upload your policies, assign nominees, and rest assured they’ll be informed when it matters most.
-              </p>
+              <p>Upload your policies, assign nominees, and rest assured they’ll be informed when it matters most.</p>
               <div className="login-wrap">
                 <div id="google-button" className="google-login-btn" />
               </div>
-               <div className="nominee-buttons">
-                  <button className="nominee-btn view">View Nominee</button>
-                  <button className="nominee-btn add">Add Nominee</button>
-            </div>
+              <div className="nominee-buttons">
+                <button className="nominee-btn view">View Nominee</button>
+                <button className="nominee-btn add">Add Nominee</button>
+              </div>
             </div>
           </section>
-          {/* How It Works */}
           <section className="how-it-works">
             <h2>How It Works</h2>
             <div className="steps">
@@ -76,8 +108,6 @@ const handleRemove = async (nomineeId, policyId) => {
               </div>
             </div>
           </section>
-
-          {/* Features */}
           <section className="features">
             <h2>Features You’ll Love</h2>
             <div className="features-grid">
@@ -98,8 +128,6 @@ const handleRemove = async (nomineeId, policyId) => {
               </div>
             </div>
           </section>
-
-          {/* Trust Section */}
           <section className="trust">
             <h2>Why People Trust Us</h2>
             <p className="trust-tagline">Built for transparency, backed by security. Trusted by families across India.</p>
@@ -111,8 +139,6 @@ const handleRemove = async (nomineeId, policyId) => {
               <div>✅ Secure Cloud Storage</div>
             </div>
           </section>
-
-          {/* CTA Section */}
           <section className="cta">
             <h2>Get Started in 2 Minutes</h2>
             <p>It’s simple, secure and built for peace of mind.</p>
@@ -122,51 +148,99 @@ const handleRemove = async (nomineeId, policyId) => {
           </section>
         </>
       ) : (
-        // <section className="user-info-section">
-        //   <h2>Welcome, <span className="highlight">{user.name}</span> 👋</h2>
-        //   <p>Email: <strong>{user.email}</strong></p>
-        //   <p>UserId: <strong>{user.id}</strong></p>
-        // </section>
- <section className="user-info-section">
-  <h3>Your Nominees</h3>
-  {nominees.length > 0 ? (
-    <div className="nominee-cards-container">
-      {nominees.map((nominee) => (
-        <div className="nominee-card" key={nominee.nomineeId}>
-  <FaTrash
-    className="delete-icon"
-    onClick={() => handleRemove(nominee.nomineeId, nominee.policyId)}
-    title="Delete Nominee"
-  />
-  <div className="nominee-info">
-    <div className="nominee-field">
-      <span className="label">Email:</span>
-      <span className="value">{nominee.nomineeEmail}</span>
-    </div>
-    <div className="nominee-field">
-      <span className="label">Phone:</span>
-      <span className="value">{nominee.nomineePhone}</span>
-    </div>
-    <div className="nominee-field">
-      <span className="label">Document:</span>
-      <a
-        className="document-link"
-        href={`http://localhost:8080/${nominee.documentUrl}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        View Document
-      </a>
-    </div>
-  </div>
-</div>
+        <section className="user-info-section">
+          <div className="section-header">
+            <h3>Your Nominees</h3>
+            <button className="add-icon-btn" onClick={() => setModalOpen(true)}>
+              <FaPlus className="add-icon" title="Add Nominee" />
+            </button>
+          </div>
 
-      ))}
-    </div>
-  ) : (
-    <p>No nominees found.</p>
-  )}
-</section>
+          {nominees.length > 0 ? (
+            <div className="nominee-cards-container">
+              {nominees.map((nominee) => (
+                <div className="nominee-card" key={nominee.nomineeId}>
+                  <FaTrash
+                    className="delete-icon"
+                    onClick={() => handleRemove(nominee.nomineeId, nominee.policyId)}
+                    title="Delete Nominee"
+                  />
+                  <div className="nominee-info">
+                    <div className="nominee-field">
+                      <span className="label">Email:</span>
+                      <span className="value">{nominee.nomineeEmail}</span>
+                    </div>
+                    <div className="nominee-field">
+                      <span className="label">Phone:</span>
+                      <span className="value">{nominee.nomineePhone}</span>
+                    </div>
+                    <div className="nominee-field">
+                      <span className="label">Document:</span>
+                      <a
+                        className="document-link"
+                        href={`http://localhost:8080/${nominee.documentUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View Document
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No nominees found.</p>
+          )}
+
+          <Modal
+            isOpen={isModalOpen}
+            onRequestClose={() => setModalOpen(false)}
+            contentLabel="Add Nominee"
+            className="modal"
+            overlayClassName="modal-overlay"
+          >
+            <h2>Add Nominee</h2>
+            <form onSubmit={handleAddNominee} className="modal-form">
+              <label>
+                Email Address
+                <FaInfoCircle className="tooltip-icon" title="Enter nominee's email" />
+                <input
+                  type="email"
+                  required
+                  value={formData.nomineeEmail}
+                  onChange={(e) => setFormData({ ...formData, nomineeEmail: e.target.value })}
+                />
+              </label>
+
+              <label>
+                Phone Number
+                <FaInfoCircle className="tooltip-icon" title="Enter 10-digit phone number" />
+                <input
+                  type="tel"
+                  required
+                  value={formData.nomineePhone}
+                  onChange={(e) => setFormData({ ...formData, nomineePhone: e.target.value })}
+                />
+              </label>
+
+              <label>
+                Upload Document
+                <FaInfoCircle className="tooltip-icon" title="Upload policy document (PDF/Image)" />
+                <input
+                  type="file"
+                  required
+                  onChange={(e) => setFormData({ ...formData, policyDocument: e.target.files[0] })}
+                />
+              </label>
+
+              <div className="modal-buttons">
+                <button type="submit" className="add-btn">Add Nominee</button>
+                <button type="button" className="cancel-btn" onClick={() => setModalOpen(false)}>Cancel</button>
+              </div>
+            </form>
+          </Modal>
+        </section>
       )}
     </div>
   );

@@ -155,9 +155,31 @@ body {
   text-align: center;
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.add-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  font-size: 1.2rem;
+  color: var(--primary);
+  transition: transform 0.2s ease;
+}
+
+.add-icon-btn:hover {
+  transform: scale(1.1);
+}
+
 .highlight {
   color: var(--primary);
 }
+
 .nominee-buttons {
   margin-top: 1.5rem;
   display: flex;
@@ -176,7 +198,7 @@ body {
 }
 
 .nominee-btn.view {
-   background-color: #1d72b8;
+  background-color: #1d72b8;
   color: #fff;
 }
 
@@ -192,7 +214,6 @@ body {
 .nominee-btn.add:hover {
   background-color: #155d94;
 }
-
 
 @media (max-width: 768px) {
   .hero {
@@ -213,6 +234,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
+  justify-content: center;
 }
 
 .nominee-card {
@@ -224,6 +246,7 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   padding: 20px 16px 16px 16px;
   transition: transform 0.2s ease;
+  text-align: left;
 }
 
 .nominee-card:hover {
@@ -248,9 +271,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 20px; /* 👈 pushes all content down */
+  padding-top: 20px;
 }
-
 
 .nominee-field {
   display: flex;
@@ -278,4 +300,69 @@ body {
 
 .document-link:hover {
   text-decoration: underline;
+}
+
+.modal {
+  background: #fff;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  margin: auto;
+  border-radius: 10px;
+  position: relative;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-form label {
+  display: block;
+  margin: 1rem 0;
+}
+
+.modal-form input[type='email'],
+.modal-form input[type='tel'],
+.modal-form input[type='file'] {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.modal-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.add-btn,
+.cancel-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-btn {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.tooltip-icon {
+  margin-left: 0.3rem;
+  color: #888;
+  cursor: help;
+  font-size: 0.9rem;
 }
