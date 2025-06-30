@@ -25,7 +25,7 @@ const Home = ({ user }) => {
     policyDocument: null,
     providerName: ''
   });
-  const [errors, setErrors] = useState({ nomineePhone: '', policyDocument: '' });
+  const [errors, setErrors] = useState({ nomineePhone: '', policyDocument: '',providerName: '',nomineeEmail: '' });
 
   const fetchNominees = async () => {
     if (user?.id) {
@@ -256,20 +256,33 @@ const Home = ({ user }) => {
             <h2>Add Nominee</h2>
             <form onSubmit={handleAddNominee} className="modal-form">
   <label>
-    Email
-    <FaInfoCircle
-      className="tooltip-icon"
-      data-tooltip-id="tooltip-email"
-      data-tooltip-content="Enter nominee's email address"
-    />
-    <input
-      type="email"
-      required
-      placeholder="e.g. john.doe@example.com"
-      value={formData.nomineeEmail}
-      onChange={(e) => setFormData({ ...formData, nomineeEmail: e.target.value })}
-    />
-  </label>
+  Email
+  <FaInfoCircle
+    className="tooltip-icon"
+    data-tooltip-id="tooltip-email"
+    data-tooltip-content="Enter nominee's email address"
+  />
+<input
+  type="email"
+  required
+  placeholder="e.g. john.doe@example.com"
+  className={errors.nomineeEmail ? 'input-error' : ''}
+  value={formData.nomineeEmail}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    // ⛔ Prevent setting value beyond 35 characters
+    if (value.length > 50) {
+      setErrors({ ...errors, nomineeEmail: 'Maximum 50 characters allowed' });
+      return; // don't update formData
+    }
+
+    setFormData({ ...formData, nomineeEmail: value });
+    setErrors({ ...errors, nomineeEmail: '' });
+  }}
+/>
+{errors.nomineeEmail && <div className="error-message">{errors.nomineeEmail}</div>}
+</label>
 
   <label>
     Phone Number
@@ -278,50 +291,97 @@ const Home = ({ user }) => {
       data-tooltip-id="tooltip-phone"
       data-tooltip-content="10 digit numeric phone number"
     />
-    <input
-      type="tel"
-      required
-      placeholder="e.g. 9876543210"
-      className={errors.nomineePhone ? 'input-error' : ''}
-      value={formData.nomineePhone}
-      onChange={(e) => setFormData({ ...formData, nomineePhone: e.target.value })}
-    />
+   <input
+  type="tel"
+  required
+  placeholder="Enter 10-digit phone number"
+  className={errors.nomineePhone ? 'input-error' : ''}
+  value={formData.nomineePhone}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    // Allow only digits
+    if (!/^\d*$/.test(value)) {
+      setErrors({ ...errors, nomineePhone: 'Only numeric digits allowed' });
+      return;
+    }
+
+    // Allow only up to 10 digits
+    if (value.length > 10) {
+      setErrors({ ...errors, nomineePhone: 'Only 10 digits allowed' });
+      return;
+    }
+
+    setFormData({ ...formData, nomineePhone: value });
+    setErrors({ ...errors, nomineePhone: '' });
+  }}
+/>
     {errors.nomineePhone && <div className="error-message">{errors.nomineePhone}</div>}
   </label>
 
-  <label>
-    Provider Name
-    <FaInfoCircle
-      className="tooltip-icon"
-      data-tooltip-id="tooltip-provider"
-      data-tooltip-content="Enter the provider name"
-    />
-    <input
-      type="text"
-      required
-      placeholder="e.g. LIC, HDFC Life"
-      value={formData.providerName}
-      onChange={(e) => setFormData({ ...formData, providerName: e.target.value })}
-    />
-  </label>
+ <label>
+  Provider Name
+  <FaInfoCircle
+    className="tooltip-icon"
+    data-tooltip-id="tooltip-provider"
+    data-tooltip-content="Enter the provider name"
+  />
+  <input
+    type="text"
+    required
+    placeholder="e.g. LIC, HDFC Life"
+    className={errors.providerName ? 'input-error' : ''}
+    value={formData.providerName}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (value.length > 50) {
+        setErrors({ ...errors, providerName: 'Maximum 50 characters allowed' });
+      } else {
+        setFormData({ ...formData, providerName: value });
+        setErrors({ ...errors, providerName: '' });
+      }
+    }}
+  />
+  {errors.providerName && <div className="error-message">{errors.providerName}</div>}
+</label>
 
   <label>
-    Policy Document
-    <FaInfoCircle
-      className="tooltip-icon"
-      data-tooltip-id="tooltip-doc"
-      data-tooltip-content="Only PDF, JPG, or PNG allowed"
-    />
-    <input
-      type="file"
-      accept=".pdf,image/jpeg,image/png"
-      required
-      className={errors.policyDocument ? 'input-error' : ''}
-      onChange={(e) => setFormData({ ...formData, policyDocument: e.target.files[0] })}
-    />
-    {errors.policyDocument && <div className="error-message">{errors.policyDocument}</div>}
-  </label>
+  Policy Document
+  <FaInfoCircle
+    className="tooltip-icon"
+    data-tooltip-id="tooltip-doc"
+    data-tooltip-content="Only PDF, JPG, or PNG allowed. Max size: 2MB"
+  />
+  <input
+    type="file"
+    accept=".pdf,image/jpeg,image/png"
+    required
+    className={errors.policyDocument ? 'input-error' : ''}
+    onChange={(e) => {
+      const file = e.target.files[0];
+      const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
 
+      if (!file) {
+        setErrors({ ...errors, policyDocument: 'Please upload a document' });
+        return;
+      }
+
+      if (!allowedTypes.includes(file.type)) {
+        setErrors({ ...errors, policyDocument: 'Only PDF, JPG or PNG files are allowed.' });
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        setErrors({ ...errors, policyDocument: 'File size must be less than or equal to 2MB' });
+        return;
+      }
+
+      setFormData({ ...formData, policyDocument: file });
+      setErrors({ ...errors, policyDocument: '' });
+    }}
+  />
+  {errors.policyDocument && <div className="error-message">{errors.policyDocument}</div>}
+</label>
   <div className="modal-buttons">
     <button type="submit" className="add-btn">Add Nominee</button>
     <button type="button" className="cancel-btn" onClick={() => setModalOpen(false)}>Cancel</button>
