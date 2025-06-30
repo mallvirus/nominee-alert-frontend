@@ -127,7 +127,7 @@ const Home = ({ user }) => {
                 <div id="google-button" className="google-login-btn" />
               </div>
               <div className="nominee-buttons">
-                <button className="nominee-btn view">View Nominee</button>
+                <button className="nominee-btn view">Check If You're a Nominee</button>
                 <button className="nominee-btn add">Add Nominee</button>
               </div>
             </div>
@@ -276,7 +276,7 @@ const Home = ({ user }) => {
     <FaInfoCircle
       className="tooltip-icon"
       data-tooltip-id="tooltip-phone"
-      data-tooltip-content="10-12 digit numeric phone number"
+      data-tooltip-content="10 digit numeric phone number"
     />
     <input
       type="tel"
