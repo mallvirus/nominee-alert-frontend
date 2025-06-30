@@ -1,0 +1,31 @@
+.terms-page {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+}
+
+.terms-page h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.terms-page h2 {
+  margin-top: 1.5rem;
+  color: #34495e;
+  font-size: 1.25rem;
+}
+
+.terms-page p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.terms-page .link {
+  color: #0077cc;
+  text-decoration: underline;
+}
