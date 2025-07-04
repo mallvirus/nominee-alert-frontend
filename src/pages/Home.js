@@ -332,12 +332,6 @@ const Home = ({ user }) => {
               Upload your policies, assign nominees, and rest assured they'll be informed 
               when it matters most. Don't let silence steal what your family deserves.
             </p>
-            <div className="login-wrap">
-              <div id="google-button" className="google-login-btn">
-                <FaUserShield />
-                Secure Login with Google
-              </div>
-            </div>
             <div className="nominee-buttons">
               <button className="nominee-btn view">
                 <FaEye />
@@ -740,14 +734,17 @@ const Home = ({ user }) => {
                 data-tooltip-id="tooltip-doc"
                 data-tooltip-content="Upload PDF, JPG, or PNG file (maximum 2MB). Ensure document is clear and readable."
               />
-              <input
-                type="file"
-                accept=".pdf,image/jpeg,image/png,image/jpg"
-                required
-                className={errors.policyDocument ? 'input-error' : ''}
-                onChange={(e) => handleInputChange('policyDocument', e.target.files[0])}
-                disabled={submitLoading}
-              />
+             <label className="custom-file-upload">
+  <input
+    type="file"
+    accept=".pdf,image/jpeg,image/png,image/jpg"
+    required
+    onChange={(e) => handleInputChange('policyDocument', e.target.files[0])}
+    disabled={submitLoading}
+  />
+  <FaCloudUploadAlt className="upload-icon" />
+  {formData.policyDocument ? formData.policyDocument.name : 'Choose Policy Document'}
+</label>
               {formData.policyDocument && (
                 <div style={{
                   marginTop: '0.75rem',
