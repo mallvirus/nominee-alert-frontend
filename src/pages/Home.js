@@ -383,7 +383,7 @@ const Home = ({ user }) => {
         }
       );
 
-      if (response.data.success) {
+      if (response.data.successful) {
         showNotification('🎉 Nominee updated successfully!', 'success');
         closeEditModal();
         fetchNominees();
