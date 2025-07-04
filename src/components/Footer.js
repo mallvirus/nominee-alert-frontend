@@ -1,4 +1,4 @@
-import { FaLinkedin, FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { FaLinkedin, FaFacebookF, FaTwitter, FaWhatsapp, FaInstagram } from "react-icons/fa";
 import './Footer.css'; // Make sure you import the CSS
 
 const Footer = () => {
@@ -13,13 +13,13 @@ const Footer = () => {
           <a href="https://wa.me/918177009416" target="_blank" rel="noopener noreferrer">
     <FaWhatsapp />
   </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-            <FaLinkedin />
+          <a href="https://www.instagram.com/keepmyassets/" target="_blank" rel="noopener noreferrer">
+            <FaInstagram />
           </a>
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.facebook.com/profile.php?id=61577883366291" target="_blank" rel="noopener noreferrer">
             <FaFacebookF />
           </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+          <a href="https://x.com/keepmyasset" target="_blank" rel="noopener noreferrer">
             <FaTwitter />
           </a>
         </div>
