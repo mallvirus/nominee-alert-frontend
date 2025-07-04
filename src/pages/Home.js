@@ -555,7 +555,7 @@ const Home = ({ user }) => {
           </p>
           <div className="features-grid">
             <div className="feature-box">
-              <FaLock className="feature-icon" size={75} />
+              <FaLock className="feature-icon" size={65} />
               <h4>Bank-Level Security</h4>
               <p>Your policies and personal information are protected with military-grade encryption, secure servers, and regular security audits.</p>
             </div>
