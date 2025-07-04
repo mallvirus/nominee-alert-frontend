@@ -897,15 +897,15 @@ section {
 
 /* CTA Section */
 .cta {
-  background: var(--gradient-cta);
-  color: var(--white);
+background: #4CAF87; /* clean white background */
+  color: var(--gray-900);   /* dark text for contrast */
   padding: var(--space-4xl) var(--space-3xl);
   border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-2xl);
+  box-shadow: var(--shadow-xl);
   text-align: center;
-  align-items: center;
   position: relative;
   overflow: hidden;
+  margin-bottom: var(--space-3xl);
 }
 
 .cta::before {
@@ -925,7 +925,7 @@ section {
 }
 
 .cta h2 {
-  color: var(--white);
+color: var(--white); /* subtle brand color for heading */
   margin-bottom: var(--space-md);
   font-size: 2.75rem;
   font-family: var(--font-heading);
@@ -933,9 +933,10 @@ section {
 }
 
 .cta p {
-  font-size: 1.375rem;
+font-size: 1.375rem;
   opacity: 0.9;
   margin-bottom: var(--space-2xl);
+  color: var(--gray-700);
 }
 
 .cta-features {
@@ -1182,9 +1183,7 @@ font-size: 3rem;
 }
 
 .delete-icon {
-  position: absolute;
-  top: var(--space-lg);
-  right: var(--space-lg);
+  position: relative;
   color: var(--accent-red);
   cursor: pointer;
   font-size: 1.375rem;
@@ -1195,7 +1194,7 @@ font-size: 3rem;
 }
 
 .delete-icon:hover {
-  background: var(--accent-red);
+ background: var(--accent-red);
   color: var(--white);
   transform: scale(1.1);
 }
@@ -1675,4 +1674,65 @@ font-size: 3rem;
 /* Dark Mode Support (Future Enhancement) */
 @media (prefers-color-scheme: dark) {
   /* Dark mode styles can be added here in future */
+}
+
+.custom-file-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 2rem;
+  background: linear-gradient(135deg, #6ee7b7 0%, #34d399 100%);
+  color: var(--gray-800);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-lg);
+  border: none;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-file-upload input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload .upload-icon {
+  font-size: 1.4rem;
+  color: var(--accent-green);
+}
+
+.custom-file-upload:hover {
+  background: linear-gradient(135deg, #34d399 0%, #6ee7b7 100%);
+  color: var(--gray-900);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.card-actions {
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.edit-icon {
+  color: var(--primary-blue);
+  cursor: pointer;
+  font-size: 1.375rem;
+  transition: var(--transition);
+  padding: var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--primary-blue-light);
+}
+
+.edit-icon:hover {
+  background: var(--primary-blue);
+  color: var(--white);
+  transform: scale(1.1);
 }

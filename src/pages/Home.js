@@ -30,7 +30,8 @@ import {
   FaCheckDouble,
   FaUserFriends,
   FaHandHoldingHeart,
-  FaFamilyProtect
+  FaFamilyProtect,
+  FaEdit
 } from 'react-icons/fa';
 
 Modal.setAppElement('#root');
@@ -38,15 +39,31 @@ Modal.setAppElement('#root');
 const Home = ({ user }) => {
   const [nominees, setNominees] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
   const [formData, setFormData] = useState({
     nomineeEmail: '',
     nomineePhone: '',
     policyDocument: null,
     providerName: ''
   });
+  const [editFormData, setEditFormData] = useState({
+    nomineeId: null,
+    policyId: null,
+    nomineeEmail: '',
+    nomineePhone: '',
+    policyDocument: null,
+    providerName: ''
+  });
   const [errors, setErrors] = useState({ 
+    nomineePhone: '', 
+    policyDocument: '',
+    nomineeEmail: '',
+    providerName: ''
+  });
+  const [editErrors, setEditErrors] = useState({ 
     nomineePhone: '', 
     policyDocument: '',
     nomineeEmail: '',
@@ -123,6 +140,24 @@ const Home = ({ user }) => {
     }
   };
 
+  const handleEditNominee = (nominee) => {
+    setEditFormData({
+      nomineeId: nominee.nomineeId,
+      policyId: nominee.policyId,
+      nomineeEmail: nominee.nomineeEmail,
+      nomineePhone: nominee.nomineePhone,
+      providerName: nominee.providerName,
+      policyDocument: null // File input starts empty
+    });
+    setEditErrors({
+      nomineePhone: '', 
+      policyDocument: '',
+      nomineeEmail: '',
+      providerName: ''
+    });
+    setEditModalOpen(true);
+  };
+
   const showNotification = (message, type = 'success') => {
     const notification = document.createElement('div');
     notification.innerHTML = `
@@ -185,8 +220,9 @@ const Home = ({ user }) => {
     return '';
   };
 
-  const validateFile = (file) => {
-    if (!file) return 'Please select a policy document.';
+  const validateFile = (file, isRequired = true) => {
+    if (!file && isRequired) return 'Please select a policy document.';
+    if (!file) return ''; // Optional file for edit
 
     const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
     const maxSize = 2 * 1024 * 1024; // 2MB limit
@@ -224,6 +260,15 @@ const Home = ({ user }) => {
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleEditInputChange = (field, value) => {
+    setEditFormData(prev => ({ ...prev, [field]: value }));
+
+    // Clear error when user starts typing
+    if (editErrors[field]) {
+      setEditErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -293,6 +338,76 @@ const Home = ({ user }) => {
     }
   };
 
+  const handleUpdateNominee = async (e) => {
+    e.preventDefault();
+    const { nomineeId, policyId, nomineeEmail, nomineePhone, policyDocument, providerName } = editFormData;
+
+    // Validate all fields (file is optional for edit)
+    const emailError = validateEmail(nomineeEmail?.trim());
+    const phoneError = validatePhone(nomineePhone?.trim());
+    const docError = validateFile(policyDocument, false); // File is optional for edit
+    const providerError = validateProviderName(providerName?.trim());
+
+    setEditErrors({
+      nomineeEmail: emailError,
+      nomineePhone: phoneError,
+      policyDocument: docError,
+      providerName: providerError
+    });
+
+    // Check if any errors exist
+    if (emailError || phoneError || docError || providerError) {
+      showNotification('Please fix the errors in the form before submitting.', 'error');
+      return;
+    }
+
+    setEditLoading(true);
+    const payload = new FormData();
+    payload.append('nomineeEmail', nomineeEmail.trim().toLowerCase());
+    payload.append('nomineePhone', nomineePhone.trim());
+    payload.append('providerName', providerName.trim());
+    payload.append('userId', user.id);
+    if (policyDocument) {
+      payload.append('file', policyDocument);
+    }
+
+    try {
+      const response = await axios.patch(
+        `${process.env.REACT_APP_HOST_SERVER}/api/nominees/${nomineeId}/policy/${policyId}/update`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 30000,
+        }
+      );
+
+      if (response.data.success) {
+        showNotification('🎉 Nominee updated successfully!', 'success');
+        closeEditModal();
+        fetchNominees();
+      }
+    } catch (error) {
+      console.error('Error updating nominee:', error);
+      let errorMessage = 'Failed to update nominee. Please try again.';
+
+      if (error.response?.status === 413) {
+        errorMessage = 'File is too large. Please upload a file smaller than 2MB.';
+      } else if (error.response?.status === 400) {
+        errorMessage = 'Invalid data provided. Please check all fields and try again.';
+      } else if (error.response?.status === 404) {
+        errorMessage = 'Nominee not found. Please refresh the page and try again.';
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = 'Upload timeout. Please check your connection and try again.';
+      }
+
+      showNotification(errorMessage, 'error');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   const closeModal = () => {
     setModalOpen(false);
     setFormData({ 
@@ -302,6 +417,24 @@ const Home = ({ user }) => {
       policyDocument: null 
     });
     setErrors({ 
+      nomineePhone: '', 
+      policyDocument: '',
+      nomineeEmail: '',
+      providerName: ''
+    });
+  };
+
+  const closeEditModal = () => {
+    setEditModalOpen(false);
+    setEditFormData({
+      nomineeId: null,
+      policyId: null,
+      nomineeEmail: '',
+      nomineePhone: '',
+      policyDocument: null,
+      providerName: ''
+    });
+    setEditErrors({ 
       nomineePhone: '', 
       policyDocument: '',
       nomineeEmail: '',
@@ -476,12 +609,6 @@ const Home = ({ user }) => {
         <section className="cta">
           <h2>Protect Your Family in 2 Minutes</h2>
           <p>Simple, secure, and brings lifelong peace of mind to you and your loved ones.</p>
-          <div className="login-wrap">
-            <div id="google-button" className="google-login-btn">
-              <FaShieldAlt />
-              Start Protecting Your Family Now
-            </div>
-          </div>
           <div className="cta-features">
             <div className="cta-feature">
               <FaClock className="cta-feature-icon" />
@@ -529,7 +656,7 @@ const Home = ({ user }) => {
           <div style={{
             textAlign: 'center', 
             padding: '4rem 2rem',
-            background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+            background: 'linear-gradient(145deg, #ffff 0%, #f8fafc 100%)',
             borderRadius: '1.5rem',
             marginTop: '2rem'
           }}>
@@ -555,11 +682,18 @@ const Home = ({ user }) => {
               <div className="nominee-card" key={nominee.nomineeId} style={{
                 animationDelay: `${index * 0.1}s`
               }}>
-                <FaTrash
-                  className="delete-icon"
-                  onClick={() => handleRemove(nominee.nomineeId, nominee.policyId)}
-                  title="Remove Nominee"
-                />
+                <div className="card-actions">
+                  <FaEdit
+                    className="edit-icon"
+                    title="Edit Nominee"
+                    onClick={() => handleEditNominee(nominee)}
+                  />
+                  <FaTrash
+                    className="delete-icon"
+                    onClick={() => handleRemove(nominee.nomineeId, nominee.policyId)}
+                    title="Remove Nominee"
+                  />
+                </div>
                 <div className="nominee-info">
                   <div className="nominee-field">
                     <span className="label">
@@ -734,17 +868,17 @@ const Home = ({ user }) => {
                 data-tooltip-id="tooltip-doc"
                 data-tooltip-content="Upload PDF, JPG, or PNG file (maximum 2MB). Ensure document is clear and readable."
               />
-             <label className="custom-file-upload">
-  <input
-    type="file"
-    accept=".pdf,image/jpeg,image/png,image/jpg"
-    required
-    onChange={(e) => handleInputChange('policyDocument', e.target.files[0])}
-    disabled={submitLoading}
-  />
-  <FaCloudUploadAlt className="upload-icon" />
-  {formData.policyDocument ? formData.policyDocument.name : 'Choose Policy Document'}
-</label>
+              <label className="custom-file-upload">
+                <input
+                  type="file"
+                  accept=".pdf,image/jpeg,image/png,image/jpg"
+                  required
+                  onChange={(e) => handleInputChange('policyDocument', e.target.files[0])}
+                  disabled={submitLoading}
+                />
+                <FaCloudUploadAlt className="upload-icon" />
+                {formData.policyDocument ? formData.policyDocument.name : 'Choose Policy Document'}
+              </label>
               {formData.policyDocument && (
                 <div style={{
                   marginTop: '0.75rem',
@@ -803,6 +937,171 @@ const Home = ({ user }) => {
           <ReactTooltip id="tooltip-phone" />
           <ReactTooltip id="tooltip-doc" />
           <ReactTooltip id="tooltip-provider" />
+        </Modal>
+
+        {/* Edit Nominee Modal */}
+        <Modal
+          isOpen={isEditModalOpen}
+          onRequestClose={closeEditModal}
+          contentLabel="Edit Nominee"
+          className="modal"
+          overlayClassName="modal-overlay"
+        >
+          <h2>
+            <FaEdit style={{color: '#2563eb'}} />
+            Edit Nominee
+          </h2>
+          <form onSubmit={handleUpdateNominee} className="modal-form">
+            <label>
+              Nominee Email Address *
+              <FaInfoCircle
+                className="tooltip-icon"
+                data-tooltip-id="tooltip-edit-email"
+                data-tooltip-content="Enter a valid email address for secure notifications and policy updates"
+              />
+              <input
+                type="email"
+                required
+                placeholder="e.g. john.doe@example.com"
+                className={editErrors.nomineeEmail ? 'input-error' : ''}
+                value={editFormData.nomineeEmail}
+                onChange={(e) => handleEditInputChange('nomineeEmail', e.target.value)}
+                maxLength={100}
+                disabled={editLoading}
+              />
+              {editErrors.nomineeEmail && (
+                <div className="error-message">
+                  <FaExclamationTriangle />
+                  {editErrors.nomineeEmail}
+                </div>
+              )}
+            </label>
+
+            <label>
+              Phone Number *
+              <FaInfoCircle
+                className="tooltip-icon"
+                data-tooltip-id="tooltip-edit-phone"
+                data-tooltip-content="10-digit Indian mobile number (without +91 or 0 prefix)"
+              />
+              <input
+                type="tel"
+                required
+                placeholder="e.g. 9876543210"
+                className={editErrors.nomineePhone ? 'input-error' : ''}
+                value={editFormData.nomineePhone}
+                onChange={(e) => handleEditInputChange('nomineePhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
+                maxLength={10}
+                disabled={editLoading}
+              />
+              {editErrors.nomineePhone && (
+                <div className="error-message">
+                  <FaExclamationTriangle />
+                  {editErrors.nomineePhone}
+                </div>
+              )}
+            </label>
+
+            <label>
+              Insurance Provider Name *
+              <FaInfoCircle
+                className="tooltip-icon"
+                data-tooltip-id="tooltip-edit-provider"
+                data-tooltip-content="Name of your insurance company (e.g., LIC, HDFC Life, ICICI Prudential)"
+              />
+              <input
+                type="text"
+                required
+                placeholder="e.g. LIC, HDFC Life, ICICI Prudential"
+                className={editErrors.providerName ? 'input-error' : ''}
+                value={editFormData.providerName}
+                onChange={(e) => handleEditInputChange('providerName', e.target.value)}
+                maxLength={50}
+                disabled={editLoading}
+              />
+              {editErrors.providerName && (
+                <div className="error-message">
+                  <FaExclamationTriangle />
+                  {editErrors.providerName}
+                </div>
+              )}
+            </label>
+
+            <label>
+              Policy Document (Optional - leave empty to keep current document)
+              <FaInfoCircle
+                className="tooltip-icon"
+                data-tooltip-id="tooltip-edit-doc"
+                data-tooltip-content="Upload PDF, JPG, or PNG file (maximum 2MB) to replace the current document. Leave empty to keep existing document."
+              />
+              <label className="custom-file-upload">
+                <input
+                  type="file"
+                  accept=".pdf,image/jpeg,image/png,image/jpg"
+                  onChange={(e) => handleEditInputChange('policyDocument', e.target.files[0])}
+                  disabled={editLoading}
+                />
+                <FaCloudUploadAlt className="upload-icon" />
+                {editFormData.policyDocument ? editFormData.policyDocument.name : 'Choose New Policy Document (Optional)'}
+              </label>
+              {editFormData.policyDocument && (
+                <div style={{
+                  marginTop: '0.75rem',
+                  padding: '0.75rem',
+                  background: 'linear-gradient(135deg, #dbeafe 0%, #f0f9ff 100%)',
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  color: '#1d4ed8',
+                  border: '1px solid #bfdbfe'
+                }}>
+                  <FaFileInvoiceDollar style={{marginRight: '0.5rem'}} />
+                  {editFormData.policyDocument.name} 
+                  <span style={{color: '#64748b', marginLeft: '0.5rem'}}>
+                    ({(editFormData.policyDocument.size / 1024 / 1024).toFixed(2)} MB)
+                  </span>
+                </div>
+              )}
+              {editErrors.policyDocument && (
+                <div className="error-message">
+                  <FaExclamationTriangle />
+                  {editErrors.policyDocument}
+                </div>
+              )}
+            </label>
+
+            <div className="modal-buttons">
+              <button 
+                type="submit" 
+                className="add-btn"
+                disabled={editLoading}
+              >
+                {editLoading ? (
+                  <>
+                    <FaSpinner className="spinner" />
+                    Updating Nominee...
+                  </>
+                ) : (
+                  <>
+                    <FaCheckDouble />
+                    Update Nominee
+                  </>
+                )}
+              </button>
+              <button 
+                type="button" 
+                className="cancel-btn" 
+                onClick={closeEditModal}
+                disabled={editLoading}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+
+          <ReactTooltip id="tooltip-edit-email" />
+          <ReactTooltip id="tooltip-edit-phone" />
+          <ReactTooltip id="tooltip-edit-doc" />
+          <ReactTooltip id="tooltip-edit-provider" />
         </Modal>
       </section>
     </div>
