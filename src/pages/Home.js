@@ -483,7 +483,7 @@ const Home = ({ user }) => {
           <h2 className="section-title">How It Works</h2>
           <div className="steps">
             <div className="step">
-              <FaCloudUploadAlt className="step-icon" />
+              <FaCloudUploadAlt className="step-icon" size={75} />
               <h3>1. Upload Policy Documents</h3>
               <p>
                 Securely store and organize your insurance documents in one encrypted place. 
@@ -491,7 +491,7 @@ const Home = ({ user }) => {
               </p>
             </div>
             <div className="step">
-              <FaUserCheck className="step-icon" />
+              <FaUserCheck className="step-icon"  size={75}/>
               <h3>2. Add Nominee Details</h3>
               <p>
                 Specify nominee contact information and assign policies with complete privacy. 
@@ -499,7 +499,7 @@ const Home = ({ user }) => {
               </p>
             </div>
             <div className="step">
-              <FaBell className="step-icon" />
+              <FaBell className="step-icon" size={75}/>
               <h3>3. Automatic Notifications</h3>
               <p>
                 In critical times, your nominees get notified automatically through secure 
@@ -514,7 +514,7 @@ const Home = ({ user }) => {
           <h2 className="section-title">The ₹82,000 Crore Truth No One Talks About</h2>
           <div className="data-content">
             <div className="data-card">
-              <FaUniversity className="data-card-icon" />
+              <FaUniversity className="data-card-icon" size={45} />
               <h4>Bank Deposits & Savings</h4>
               <div className="amount">₹{bankAmount.toLocaleString()}+ Cr</div>
               <div className="reason">
@@ -523,7 +523,7 @@ const Home = ({ user }) => {
               </div>
             </div>
             <div className="data-card">
-              <FaShieldAlt className="data-card-icon" />
+              <FaShieldAlt className="data-card-icon" size={45}/>
               <h4>Insurance Policies</h4>
               <div className="amount">₹{insuranceAmount.toLocaleString()}+ Cr</div>
               <div className="reason">
@@ -532,7 +532,7 @@ const Home = ({ user }) => {
               </div>
             </div>
             <div className="data-card">
-              <FaLandmark className="data-card-icon" />
+              <FaLandmark className="data-card-icon" size={45}/>
               <h4>EPF, PPF & Government Schemes</h4>
               <div className="amount">₹{govAmount.toLocaleString()}+ Cr</div>
               <div className="reason">
