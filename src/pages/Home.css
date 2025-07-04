@@ -205,7 +205,7 @@ body {
   min-height: 100vh;
   padding: 0;
   margin: 0;
-   gap: var(--space-3xl);
+  gap: 0;
 }
 
 /* Hero Section */
@@ -607,6 +607,7 @@ body {
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   text-align: center;
+  align-items: center;
   transition: var(--transition);
   border-left: 6px solid;
   position: relative;
@@ -661,9 +662,10 @@ body {
 
 .data-card-icon {
   font-size: 4rem;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 1.5rem;
   display: block;
-  transition: var(--transition);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .data-card:hover .data-card-icon {
@@ -899,6 +901,7 @@ body {
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-2xl);
   text-align: center;
+  align-items: center;
   position: relative;
   overflow: hidden;
 }
@@ -980,12 +983,13 @@ body {
 /* User Info Section */
 .user-info-section {
   flex: 1;
-  padding: 10px;
+  padding: 10;
   background: none;
   border-radius: 0;
   box-shadow: none;
   min-height: 0;
 }
+
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -1506,6 +1510,10 @@ body {
     text-align: center;
   }
 
+  .nominee-cards-container {
+    grid-template-columns: 1fr;
+  }
+
   .modal {
     padding: var(--space-2xl) var(--space-lg);
     width: 95%;
@@ -1665,39 +1673,4 @@ body {
 /* Dark Mode Support (Future Enhancement) */
 @media (prefers-color-scheme: dark) {
   /* Dark mode styles can be added here in future */
-}
-.custom-file-upload {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 2rem;
-  background: linear-gradient(135deg, #07915f 0%, #6ee7b7 100%);
-  color: var(--gray-800);
-  border-radius: var(--radius-full);
-  font-weight: 700;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--shadow-lg);
-  border: none;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.custom-file-upload input[type="file"] {
-  display: none;
-}
-
-.custom-file-upload .upload-icon {
-  font-size: 1.4rem;
-  color: var(--accent-green);
-}
-
-.custom-file-upload:hover {
-  background: linear-gradient(135deg, #34d399 0%, #6ee7b7 100%);
-  color: var(--gray-900);
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-2px) scale(1.03);
 }
