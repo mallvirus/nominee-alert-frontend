@@ -555,32 +555,32 @@ const Home = ({ user }) => {
           </p>
           <div className="features-grid">
             <div className="feature-box">
-              <FaLock className="feature-icon" />
+              <FaLock className="feature-icon" size={75} />
               <h4>Bank-Level Security</h4>
               <p>Your policies and personal information are protected with military-grade encryption, secure servers, and regular security audits.</p>
             </div>
             <div className="feature-box">
-              <FaUserFriends className="feature-icon" />
+              <FaUserFriends className="feature-icon" size={65} />
               <h4>Multiple Nominees</h4>
               <p>Add and manage unlimited nominees per policy with customizable share percentages and detailed contact information.</p>
             </div>
             <div className="feature-box">
-              <FaCheckCircle className="feature-icon" />
+              <FaCheckCircle className="feature-icon" size={65}/>
               <h4>Smart Notifications</h4>
               <p>We notify your nominees through secure, verified channels when it matters most, ensuring they never miss out on their benefits.</p>
             </div>
             <div className="feature-box">
-              <FaDatabase className="feature-icon" />
+              <FaDatabase className="feature-icon" size={65}/>
               <h4>Zero Data Sharing</h4>
               <p>Your information is never sold or shared with third parties. Complete privacy and confidentiality guaranteed by design.</p>
             </div>
             <div className="feature-box">
-              <FaBell className="feature-icon" />
+              <FaBell className="feature-icon" size={65}/>
               <h4>Real-Time Updates</h4>
               <p>Instant notifications and updates ensure nominees are always informed about their beneficiary status and policy changes.</p>
             </div>
             <div className="feature-box">
-              <FaGlobe className="feature-icon" />
+              <FaGlobe className="feature-icon" size={65} />
               <h4>India-First Compliance</h4>
               <p>Built specifically for Indian insurance laws, regulatory requirements, and local banking systems with full compliance.</p>
             </div>
