@@ -281,7 +281,9 @@ body {
   from { filter: drop-shadow(0 10px 20px rgba(37, 99, 235, 0.2)); }
   to { filter: drop-shadow(0 15px 30px rgba(37, 99, 235, 0.4)); }
 }
-
+section {
+  margin-bottom: 2rem; /* or any value you like */
+}
 .hero-text h1 {
   font-family: var(--font-heading);
   font-size: 3.5rem;
@@ -955,9 +957,9 @@ body {
 }
 
 .cta-feature-icon {
-  font-size: 3rem;
+font-size: 3rem;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: var(--space-md);
+  margin: 0 auto var(--space-md) auto;
   display: block;
   transition: var(--transition);
 }
