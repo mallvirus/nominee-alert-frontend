@@ -686,11 +686,13 @@ const Home = ({ user }) => {
                   <FaEdit
                     className="edit-icon"
                     title="Edit Nominee"
+                    size={35}
                     onClick={() => handleEditNominee(nominee)}
                   />
                   <FaTrash
                     className="delete-icon"
                     onClick={() => handleRemove(nominee.nomineeId, nominee.policyId)}
+                    size={35}
                     title="Remove Nominee"
                   />
                 </div>
