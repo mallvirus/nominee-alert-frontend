@@ -27,39 +27,41 @@ function App() {
     setLoading(false);
   }, []);
 
-  const handleGoogleResponse = (response) => {
+  const handleGoogleResponse = async (response) => {
+    if (!response.credential) {
+      console.error('Google sign-in failed: No credential received.');
+      return;
+    }
+
     try {
-      // Decode the JWT token to get user information
-      const token = response.credential;
-      const base64Url = token.split('.')[1];
+      const base64Url = response.credential.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = decodeURIComponent(
         atob(base64)
           .split('')
-          .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
           .join('')
       );
+      const decoded = JSON.parse(jsonPayload);
 
-      const userData = JSON.parse(jsonPayload);
+      const userInfo = { name: decoded.name, email: decoded.email };
 
-      const userInfo = {
-        id: userData.sub,
-        name: userData.name,
-        email: userData.email,
-        picture: userData.picture,
-        token,
-      };
+      const res = await fetch('http://localhost:7001/api/user/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userInfo),
+      });
 
-      setUser(userInfo);
-      localStorage.setItem('user', JSON.stringify(userInfo));
-
-      // Navigate to nominee check page after successful sign‑in
-      setCurrentPage('nominee-check');
-
-      showNotification(`Welcome ${userData.name}! 🎉`, 'success');
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setUser(data.user);
+        console.log('User signed in:', data.user);
+      } else {
+        console.error('Backend user creation failed:', res.status, res.statusText);
+      }
     } catch (error) {
-      console.error('Error processing Google response:', error);
-      showNotification('Sign‑in failed. Please try again.', 'error');
+      console.error('Error handling Google response:', error);
     }
   };
 
