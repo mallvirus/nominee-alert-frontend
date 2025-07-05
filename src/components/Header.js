@@ -1,4 +1,3 @@
-// components/Header.js
 import React, { useEffect, useRef } from 'react';
 import './Header.css';
 
@@ -6,7 +5,15 @@ import './Header.css';
 // This ID will be used by the Google library to find the element.
 const GOOGLE_BUTTON_ID = 'google-sign-in-button-container';
 
-const Header = ({ user, onLogout, onGoogleResponse, googleClientId }) => {
+const Header = ({ 
+  user, 
+  onLogout, 
+  onGoogleResponse, 
+  googleClientId, 
+  onNavigateHome, 
+  onNavigateNomineeCheck, 
+  currentPage 
+}) => {
   // We no longer need a ref if we're targeting by ID after initial render.
   // However, it's still useful to make sure the div is in the DOM when we initialize.
   const isGoogleInitialized = useRef(false); // To prevent multiple initializations
@@ -47,19 +54,44 @@ const Header = ({ user, onLogout, onGoogleResponse, googleClientId }) => {
         // If user is logged in, hide the button
         googleButtonElement.style.display = 'none';
         // Also hide any One Tap prompts if they are active
-        window.google.accounts.id.cancel();
+        if (window.google && window.google.accounts) {
+          window.google.accounts.id.cancel();
+        }
       } else {
         // If no user, show the button
         googleButtonElement.style.display = 'block'; // Or 'flex', 'inline-block' depending on container
         // Optionally prompt for One Tap sign-in
-        window.google.accounts.id.prompt();
+        if (window.google && window.google.accounts) {
+          window.google.accounts.id.prompt();
+        }
       }
     }
   }, [user]); // Only re-run when the 'user' prop changes
 
   return (
     <header className="header">
-      <div className="logo">🔔 Nominee Notify</div>
+      <div className="logo" onClick={onNavigateHome} style={{ cursor: 'pointer' }}>
+        🔔 Nominee Notify
+      </div>
+      
+      {/* Navigation Menu for authenticated users */}
+      {user && (
+        <nav className="header-nav">
+          <button 
+            className={`nav-btn ${currentPage === 'home' ? 'active' : ''}`}
+            onClick={onNavigateHome}
+          >
+            Dashboard
+          </button>
+          <button 
+            className={`nav-btn ${currentPage === 'nominee-check' ? 'active' : ''}`}
+            onClick={onNavigateNomineeCheck}
+          >
+            Check Nominations
+          </button>
+        </nav>
+      )}
+      
       <div className="auth-section"> {/* Wrapper for authentication elements */}
         {/* The Google button container is ALWAYS rendered in the DOM,
             but its visibility is controlled by CSS 'display' property
@@ -69,7 +101,17 @@ const Header = ({ user, onLogout, onGoogleResponse, googleClientId }) => {
         {/* This section is conditionally rendered by React based on the 'user' prop */}
         {user && ( // Only render this if a user is logged in
           <div className="user-info-container">
-            <div className="user-name">{user.name}</div>
+            {user.picture && (
+              <img 
+                src={user.picture} 
+                alt={user.name}
+                className="user-avatar"
+              />
+            )}
+            <div className="user-details">
+              <div className="user-name">{user.name}</div>
+              <div className="user-email">{user.email}</div>
+            </div>
             <span onClick={onLogout} className="logout-link">
               Logout
             </span>

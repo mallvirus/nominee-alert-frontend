@@ -36,7 +36,7 @@ import {
 
 Modal.setAppElement('#root');
 
-const Home = ({ user }) => {
+const Home = ({ user, onGoogleSignIn }) => {
   const [nominees, setNominees] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -442,6 +442,13 @@ const Home = ({ user }) => {
     });
   };
 
+  // Handle "Check If You're a Nominee" button click
+  const handleCheckNomineeClick = () => {
+    if (onGoogleSignIn) {
+      onGoogleSignIn(); // Trigger Google Sign-In
+    }
+  };
+
   // Animated counters for statistics
   const bankAmount = useAnimatedCounter(35000);
   const insuranceAmount = useAnimatedCounter(27000);
@@ -466,11 +473,17 @@ const Home = ({ user }) => {
               when it matters most. Don't let silence steal what your family deserves.
             </p>
             <div className="nominee-buttons">
-              <button className="nominee-btn view">
+              <button 
+                className="nominee-btn view"
+                onClick={handleCheckNomineeClick}
+              >
                 <FaEye />
                 Check If You're a Nominee
               </button>
-              <button className="nominee-btn add">
+              <button 
+                className="nominee-btn add"
+                onClick={handleCheckNomineeClick}
+              >
                 <FaPlus />
                 Add Your First Nominee
               </button>
