@@ -55,8 +55,15 @@ function App() {
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem('user', JSON.stringify(data.user));
-        setUser(data.user);
-        console.log('User signed in:', data.user);
+        const userInfo = {
+        id: data.user?.id,
+        name: data.user?.name,
+        email: data.user?.email,
+        picture: decoded.picture,
+        phone:data.user?.phone,
+      };
+        setUser(userInfo);
+        console.log('User signed in:', userInfo);
       } else {
         console.error('Backend user creation failed:', res.status, res.statusText);
       }
@@ -64,7 +71,6 @@ function App() {
       console.error('Error handling Google response:', error);
     }
   };
-
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('user');
