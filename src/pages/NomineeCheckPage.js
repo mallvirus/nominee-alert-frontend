@@ -9,7 +9,6 @@ import {
   FaShieldAlt,
   FaUserCheck,
   FaBell,
-  FaHeart,
   FaLock,
   FaCreditCard,
   FaCheckDouble,
@@ -20,7 +19,8 @@ import {
   FaCertificate,
   FaRupeeSign,
   FaArrowRight,
-  FaRedo
+  FaRedo,
+  FaTimes
 } from 'react-icons/fa';
 import './NomineeCheckPage.css';
 
@@ -44,12 +44,14 @@ function NomineeCheckPage() {
   const fileInputRef = useRef();
 
   // Validation functions
-  const validateEmail = (email) => {
-    if (!email) return '';
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return 'Please enter a valid email address.';
-    return '';
-  };
+ const validateEmail = (email) => {
+  if (!email) return '';
+  if (email.length > 50)
+    return "Email can't exceed more than 50 characters";
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return 'Please enter a valid email address.';
+  return '';
+};
 
   const validatePhone = (phone) => {
     if (!phone) return '';
@@ -95,6 +97,16 @@ function NomineeCheckPage() {
       setFileName(selectedFile.name);
       setErrors(prev => ({ ...prev, file: validateFile(selectedFile) }));
       setToast({ type: "", message: "" });
+    }
+  };
+
+  // Remove uploaded file
+  const handleRemoveFile = () => {
+    setFile(null);
+    setFileName("");
+    setErrors(prev => ({ ...prev, file: '' }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -166,44 +178,46 @@ function NomineeCheckPage() {
     setStep(1);
     setToast({ type: "", message: "" });
     setErrors({ email: '', phone: '', file: '' });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
     <div className="nominee-check-page">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <h1 className="hero-title">
-            <FaHandHoldingHeart style={{marginRight: '1rem', color: '#fbbf24'}} />
-            Nominee Notification Service
-          </h1>
-          <p className="hero-subtitle">
-            Helping families access their rightful insurance claims with dignity and ease
-          </p>
-          <p className="hero-description">
-            Our secure platform enables quick verification of death certificates and instant notification 
-            to all registered nominees, ensuring no family is left behind during difficult times.
-          </p>
-          
-          <div className="hero-features">
-            <div className="hero-feature">
-              <FaShieldAlt className="hero-feature-icon" />
-              <h4>Secure & Private</h4>
-              <p>Bank-level encryption protects all sensitive documents and personal information</p>
-            </div>
-            <div className="hero-feature">
-              <FaUserCheck className="hero-feature-icon" />
-              <h4>Instant Verification</h4>
-              <p>AI-powered document verification ensures authenticity within minutes</p>
-            </div>
-            <div className="hero-feature">
-              <FaBell className="hero-feature-icon" />
-              <h4>Multi-Channel Alerts</h4>
-              <p>Nominees receive notifications via SMS, Email, and registered mail</p>
+      {/* Hero Section - Only show on step 1 */}
+      {step === 1 && (
+        <section className="hero-section">
+          <div className="hero-content">
+            <h1 className="hero-title">
+              <FaHandHoldingHeart style={{marginRight: '1rem', color: '#fbbf24'}} />
+              Document Verification Portal
+            </h1>
+            <p className="hero-description">
+              Our secure platform enables quick verification of death certificates and instant notification 
+              to all registered nominees, ensuring no family is left behind during difficult times.
+            </p>
+            
+            <div className="hero-features">
+              <div className="hero-feature">
+                <FaShieldAlt className="hero-feature-icon" />
+                <h4>Secure & Private</h4>
+                <p>Bank-level encryption protects all sensitive documents and personal information</p>
+              </div>
+              <div className="hero-feature">
+                <FaUserCheck className="hero-feature-icon" />
+                <h4>Instant Verification</h4>
+                <p>AI-powered document verification ensures authenticity within minutes</p>
+              </div>
+              <div className="hero-feature">
+                <FaBell className="hero-feature-icon" />
+                <h4>Multi-Channel Alerts</h4>
+                <p>Nominees receive notifications via SMS, Email, and registered mail</p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Main Form Section */}
       <section className="search-results">
@@ -239,18 +253,19 @@ function NomineeCheckPage() {
                   </h3>
 
                   <div className="input-row">
-                    <label>
-                      <FaEnvelope style={{color: '#3b82f6'}} />
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => handleEmailChange(e.target.value)}
-                      placeholder="e.g. john.doe@example.com"
-                      className={errors.email ? 'input-error' : ''}
-                    />
-                    {errors.email && <div className="error-message"><FaExclamationTriangle />{errors.email}</div>}
+                   <label>
+  <FaEnvelope style={{color: '#3b82f6'}} />
+  Email Address
+</label>
+<input
+  type="email"
+  value={email}
+  onChange={(e) => handleEmailChange(e.target.value)}
+  placeholder="e.g. john.doe@example.com"
+  className={errors.email ? 'input-error' : ''}
+  maxLength={50}
+/>
+{errors.email && <div className="error-message"><FaExclamationTriangle />{errors.email}</div>}
 
                     <div style={{
                       textAlign: 'center',
@@ -311,36 +326,37 @@ function NomineeCheckPage() {
                       />
                     </label>
 
-                    <label className="custom-file-upload">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={handleFileChange}
-                        style={{ display: 'none' }}
-                      />
-                      <FaCloudUploadAlt style={{fontSize: '1.5rem'}} />
-                      {fileName || 'Choose Death Certificate'}
-                    </label>
+                    {!file && (
+                      <label className="custom-file-upload">
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={handleFileChange}
+                          style={{ display: 'none' }}
+                        />
+                        <FaCloudUploadAlt style={{fontSize: '1.5rem'}} />
+                        Choose Death Certificate
+                      </label>
+                    )}
 
                     {file && (
-                      <div style={{
-                        marginTop: '1.5rem',
-                        padding: '1.5rem',
-                        background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                        borderRadius: '1rem',
-                        fontSize: '1rem',
-                        color: '#1d4ed8',
-                        border: '2px solid #60a5fa',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '1rem'
-                      }}>
-                        <FaFileAlt style={{fontSize: '1.5rem'}} />
-                        <span style={{flex: 1, fontWeight: '600'}}>{fileName}</span>
-                        <span style={{color: '#6b7280', fontWeight: '500'}}>
-                          ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
+                      <div className="file-display-container">
+                        <div className="file-info">
+                          <FaFileAlt style={{fontSize: '1.5rem', color: '#1d4ed8'}} />
+                          <div className="file-details">
+                            <div className="file-name">{fileName}</div>
+                            <div className="file-size">({(file.size / 1024 / 1024).toFixed(2)} MB)</div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRemoveFile}
+                          className="remove-file-btn"
+                          title="Remove file"
+                        >
+                          <FaTimes />
+                        </button>
                       </div>
                     )}
 
