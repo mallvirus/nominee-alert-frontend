@@ -478,14 +478,7 @@ const Home = ({ user, onGoogleSignIn }) => {
                 onClick={handleCheckNomineeClick}
               >
                 <FaEye />
-                Check If You're a Nominee
-              </button>
-              <button 
-                className="nominee-btn add"
-                onClick={handleCheckNomineeClick}
-              >
-                <FaPlus />
-                Add Your First Nominee
+                Application Overview
               </button>
             </div>
           </div>

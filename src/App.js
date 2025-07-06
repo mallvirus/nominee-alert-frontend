@@ -87,22 +87,59 @@ function App() {
   };
 
   const showNotification = (message, type = 'success') => {
+    // Remove any existing notifications first
+    const existingNotifications = document.querySelectorAll('.app-notification');
+    existingNotifications.forEach(notification => {
+      if (document.body.contains(notification)) {
+        document.body.removeChild(notification);
+      }
+    });
+
     const notification = document.createElement('div');
+    notification.className = 'app-notification';
+    
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
+    
     notification.innerHTML = `
-      <div style="display:flex;align-items:center;gap:0.5rem;">
-        ${type === 'success' ? '✅' : '❌'}
-        <span>${message}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;">
+        <div style="display:flex;align-items:center;gap:0.75rem;flex:1;">
+          <span style="font-size:1.25rem;">${icon}</span>
+          <span style="flex:1;">${message}</span>
+        </div>
+        <button 
+          onclick="this.parentElement.parentElement.remove()" 
+          style="
+            background:rgba(255,255,255,0.2);
+            border:none;
+            border-radius:50%;
+            width:28px;
+            height:28px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            color:white;
+            font-size:16px;
+            font-weight:bold;
+            transition:all 0.2s ease;
+            flex-shrink:0;
+          "
+          onmouseover="this.style.background='rgba(255,255,255,0.3)';this.style.transform='scale(1.1)'"
+          onmouseout="this.style.background='rgba(255,255,255,0.2)';this.style.transform='scale(1)'"
+          title="Close notification"
+        >×</button>
       </div>
     `;
 
-    const bgColor = type === 'success' ? '#10b981' : '#ef4444';
     notification.style.cssText = `
       position:fixed;top:20px;right:20px;z-index:9999;
       background:${bgColor};color:white;padding:1rem 1.5rem;
       border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.2);
       font-weight:500;font-family:'Inter',sans-serif;
-      animation:slideInRight 0.3s ease-out,fadeOut 0.3s ease-in 3.7s;
+      animation:slideInRight 0.3s ease-out;
       max-width:400px;word-wrap:break-word;
+      min-width:300px;
     `;
 
     // Add animation keyframes if not already added
@@ -118,16 +155,33 @@ function App() {
           from { opacity: 1; }
           to   { opacity: 0; }
         }
+        .app-notification {
+          transition: all 0.3s ease;
+        }
+        .app-notification:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 15px 35px rgba(0,0,0,0.3) !important;
+        }
       `;
       document.head.appendChild(style);
     }
 
     document.body.appendChild(notification);
-    setTimeout(() => {
+
+    // Auto-remove after 6 seconds (optional)
+    const autoRemoveTimer = setTimeout(() => {
       if (document.body.contains(notification)) {
-        document.body.removeChild(notification);
+        notification.style.animation = 'fadeOut 0.3s ease-in';
+        setTimeout(() => {
+          if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+          }
+        }, 300);
       }
-    }, 4000);
+    }, 6000);
+
+    // Store timer reference to clear it if manually closed
+    notification.autoRemoveTimer = autoRemoveTimer;
   };
 
   const navigateToHome = () => setCurrentPage('home');
@@ -179,12 +233,11 @@ function App() {
           <Home user={user} onGoogleSignIn={handleGoogleSignIn} />
         )}
         {currentPage === 'nominee-check' && <NomineeCheckPage user={user} />}
-        
       </main>
+      
       <Footer />
     </div>
   );
 }
 
 export default App;
-
