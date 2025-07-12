@@ -46,7 +46,7 @@ function App() {
 
       const userInfo = { name: decoded.name, email: decoded.email };
 
-      const res = await fetch('http://localhost:7001/api/user/create', {
+      const res = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/user/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userInfo),

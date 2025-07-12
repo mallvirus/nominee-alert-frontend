@@ -22,6 +22,7 @@ import {
   FaRedo,
   FaTimes
 } from 'react-icons/fa';
+import axios from 'axios';  // <-- Import axios for API calls
 import './NomineeCheckPage.css';
 
 // Dummy user ID for demo; replace with your auth context/user state
@@ -44,14 +45,14 @@ function NomineeCheckPage() {
   const fileInputRef = useRef();
 
   // Validation functions
- const validateEmail = (email) => {
-  if (!email) return '';
-  if (email.length > 50)
-    return "Email can't exceed more than 50 characters";
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return 'Please enter a valid email address.';
-  return '';
-};
+  const validateEmail = (email) => {
+    if (!email) return '';
+    if (email.length > 50)
+      return "Email can't exceed more than 50 characters";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return 'Please enter a valid email address.';
+    return '';
+  };
 
   const validatePhone = (phone) => {
     if (!phone) return '';
@@ -110,7 +111,7 @@ function NomineeCheckPage() {
     }
   };
 
-  // Simulate API call for upload & validation
+  // Updated handleSubmit to call your API and handle response
   const handleSubmit = async (e) => {
     e.preventDefault();
     setToast({ type: "", message: "" });
@@ -139,23 +140,34 @@ function NomineeCheckPage() {
 
     setLoading(true);
 
-    // Prepare form data
+    // Prepare form data for API call
     const formData = new FormData();
-    if (email) formData.append("policyHolderEmail", email);
-    if (phone) formData.append("policyHolderPhoneNumber", phone);
-    formData.append("deathCertificate", file);
-    formData.append("LoggedInUserId", LOGGED_IN_USER_ID);
+    if (email) formData.append("email", email);
+    if (phone) formData.append("phoneNumber", phone);
+    if (file) formData.append("policyDocument", file);
 
     try {
-      // Simulate API response
-      setTimeout(() => {
-        setLoading(false);
-        setToast({ type: "info", message: "Document verified successfully! Payment required to notify nominees." });
+      // Call your backend API
+      const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}/api/policies/policyholders/validate`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const data = response.data;
+
+      if (data.successful === true && data.message === "User/Nominee Found") {
+        // Proceed to next step
+        setToast({ type: "success", message: "User/Nominee Found. Proceeding..." });
         setStep(2);
-      }, 2000);
-    } catch (err) {
+      } else {
+        // Show error message from API or generic
+        setToast({ type: "error", message: data.message || "Validation failed. Please check your details." });
+      }
+    } catch (error) {
+      setToast({ type: "error", message: "Error calling validation API. Please try again." });
+    } finally {
       setLoading(false);
-      setToast({ type: "error", message: "Upload failed. Please try again." });
     }
   };
 
@@ -190,14 +202,14 @@ function NomineeCheckPage() {
         <section className="hero-section">
           <div className="hero-content">
             <h1 className="hero-title">
-              <FaHandHoldingHeart style={{marginRight: '1rem', color: '#fbbf24'}} />
+              <FaHandHoldingHeart style={{ marginRight: '1rem', color: '#fbbf24' }} />
               Document Verification Portal
             </h1>
             <p className="hero-description">
-              Our secure platform enables quick verification of death certificates and instant notification 
+              Our secure platform enables quick verification of death certificates and instant notification
               to all registered nominees, ensuring no family is left behind during difficult times.
             </p>
-            
+
             <div className="hero-features">
               <div className="hero-feature">
                 <FaShieldAlt className="hero-feature-icon" />
@@ -224,7 +236,7 @@ function NomineeCheckPage() {
         <div className="results-container">
           <div className="results-header">
             <h2>
-              <FaCertificate style={{color: '#3b82f6'}} />
+              <FaCertificate style={{ color: '#3b82f6' }} />
               Document Verification & Notification
             </h2>
             <div className="step-indicator">
@@ -248,24 +260,24 @@ function NomineeCheckPage() {
               <form onSubmit={handleSubmit} className="upload-form">
                 <div className="form-section">
                   <h3>
-                    <FaUsers style={{color: '#3b82f6'}} />
+                    <FaUsers style={{ color: '#3b82f6' }} />
                     Policyholder Information
                   </h3>
 
                   <div className="input-row">
-                   <label>
-  <FaEnvelope style={{color: '#3b82f6'}} />
-  Email Address
-</label>
-<input
-  type="email"
-  value={email}
-  onChange={(e) => handleEmailChange(e.target.value)}
-  placeholder="e.g. john.doe@example.com"
-  className={errors.email ? 'input-error' : ''}
-  maxLength={50}
-/>
-{errors.email && <div className="error-message"><FaExclamationTriangle />{errors.email}</div>}
+                    <label>
+                      <FaEnvelope style={{ color: '#3b82f6' }} />
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => handleEmailChange(e.target.value)}
+                      placeholder="e.g. john.doe@example.com"
+                      className={errors.email ? 'input-error' : ''}
+                      maxLength={50}
+                    />
+                    {errors.email && <div className="error-message"><FaExclamationTriangle />{errors.email}</div>}
 
                     <div style={{
                       textAlign: 'center',
@@ -291,10 +303,10 @@ function NomineeCheckPage() {
                     </div>
 
                     <label>
-                      <FaPhoneAlt style={{color: '#3b82f6'}} />
+                      <FaPhoneAlt style={{ color: '#3b82f6' }} />
                       Phone Number
-                      <FaInfoCircle 
-                        style={{color: '#9ca3af', fontSize: '1rem', cursor: 'help'}}
+                      <FaInfoCircle
+                        style={{ color: '#9ca3af', fontSize: '1rem', cursor: 'help' }}
                         title="10-digit Indian mobile number (without +91 or 0 prefix)"
                       />
                     </label>
@@ -312,16 +324,16 @@ function NomineeCheckPage() {
 
                 <div className="form-section">
                   <h3>
-                    <FaCertificate style={{color: '#3b82f6'}} />
+                    <FaCertificate style={{ color: '#3b82f6' }} />
                     Death Certificate
                   </h3>
 
                   <div className="input-group">
                     <label>
-                      <FaFileAlt style={{color: '#3b82f6'}} />
+                      <FaFileAlt style={{ color: '#3b82f6' }} />
                       Upload Document *
-                      <FaInfoCircle 
-                        style={{color: '#9ca3af', fontSize: '1rem', cursor: 'help'}}
+                      <FaInfoCircle
+                        style={{ color: '#9ca3af', fontSize: '1rem', cursor: 'help' }}
                         title="Upload PDF, JPG, or PNG file (maximum 5MB). Ensure document is clear and readable."
                       />
                     </label>
@@ -335,7 +347,7 @@ function NomineeCheckPage() {
                           onChange={handleFileChange}
                           style={{ display: 'none' }}
                         />
-                        <FaCloudUploadAlt style={{fontSize: '1.5rem'}} />
+                        <FaCloudUploadAlt style={{ fontSize: '1.5rem' }} />
                         Choose Death Certificate
                       </label>
                     )}
@@ -343,7 +355,7 @@ function NomineeCheckPage() {
                     {file && (
                       <div className="file-display-container">
                         <div className="file-info">
-                          <FaFileAlt style={{fontSize: '1.5rem', color: '#1d4ed8'}} />
+                          <FaFileAlt style={{ fontSize: '1.5rem', color: '#1d4ed8' }} />
                           <div className="file-details">
                             <div className="file-name">{fileName}</div>
                             <div className="file-size">({(file.size / 1024 / 1024).toFixed(2)} MB)</div>
@@ -376,7 +388,7 @@ function NomineeCheckPage() {
                 >
                   {loading ? (
                     <>
-                      <FaSpinner style={{animation: 'spin 1s linear infinite'}} />
+                      <FaSpinner style={{ animation: 'spin 1s linear infinite' }} />
                       Verifying Document...
                     </>
                   ) : (
@@ -394,7 +406,7 @@ function NomineeCheckPage() {
           {/* Step 2: Payment */}
           {step === 2 && (
             <div className="payment-container">
-              <div style={{marginBottom: '3rem'}}>
+              <div style={{ marginBottom: '3rem' }}>
                 <FaCreditCard style={{
                   fontSize: '5rem',
                   color: '#3b82f6',
@@ -411,17 +423,17 @@ function NomineeCheckPage() {
 
               <div className="payment-features">
                 <div className="payment-feature">
-                  <FaBell className="payment-feature-icon" style={{color: '#10b981'}} />
+                  <FaBell className="payment-feature-icon" style={{ color: '#10b981' }} />
                   <h4>SMS Notifications</h4>
                   <p>Instant alerts to all nominees</p>
                 </div>
                 <div className="payment-feature">
-                  <FaEnvelope className="payment-feature-icon" style={{color: '#3b82f6'}} />
+                  <FaEnvelope className="payment-feature-icon" style={{ color: '#3b82f6' }} />
                   <h4>Email Notifications</h4>
                   <p>Detailed claim information</p>
                 </div>
                 <div className="payment-feature">
-                  <FaLock className="payment-feature-icon" style={{color: '#ef4444'}} />
+                  <FaLock className="payment-feature-icon" style={{ color: '#ef4444' }} />
                   <h4>Secure Process</h4>
                   <p>Bank-level encryption</p>
                 </div>
@@ -438,7 +450,7 @@ function NomineeCheckPage() {
               >
                 {paymentLoading ? (
                   <>
-                    <FaSpinner style={{animation: 'spin 1s linear infinite'}} />
+                    <FaSpinner style={{ animation: 'spin 1s linear infinite' }} />
                     Processing Payment...
                   </>
                 ) : (
@@ -463,17 +475,17 @@ function NomineeCheckPage() {
 
               <div className="success-steps">
                 <div className="step-card">
-                  <FaBell className="step-icon" style={{color: '#10b981'}} />
+                  <FaBell className="step-icon" style={{ color: '#10b981' }} />
                   <h4>SMS Sent</h4>
                   <p>Instant notifications delivered to all nominee phone numbers</p>
                 </div>
                 <div className="step-card">
-                  <FaEnvelope className="step-icon" style={{color: '#3b82f6'}} />
+                  <FaEnvelope className="step-icon" style={{ color: '#3b82f6' }} />
                   <h4>Emails Delivered</h4>
                   <p>Detailed claim information sent to all nominee email addresses</p>
                 </div>
                 <div className="step-card">
-                  <FaHandHoldingHeart className="step-icon" style={{color: '#f59e0b'}} />
+                  <FaHandHoldingHeart className="step-icon" style={{ color: '#f59e0b' }} />
                   <h4>Families Informed</h4>
                   <p>Beneficiaries can now proceed with their rightful claims</p>
                 </div>
