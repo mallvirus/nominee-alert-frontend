@@ -17,7 +17,6 @@ const Header = ({
   // We no longer need a ref if we're targeting by ID after initial render.
   // However, it's still useful to make sure the div is in the DOM when we initialize.
   const isGoogleInitialized = useRef(false); // To prevent multiple initializations
-
   useEffect(() => {
     // This effect runs once when the component mounts
     // to initialize the Google button if conditions are met.

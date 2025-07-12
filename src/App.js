@@ -42,9 +42,9 @@ function App() {
           .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
           .join('')
       );
-      const decoded = JSON.parse(jsonPayload);
+      const decoded = JSON.parse(jsonPayload);  
 
-      const userInfo = { name: decoded.name, email: decoded.email };
+      const userInfo = { name: decoded.name, email: decoded.email,picture: decoded.picture };
 
       const res = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/user/create`, {
         method: 'POST',
@@ -54,9 +54,12 @@ function App() {
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem('user', JSON.stringify(data.user));
-        setUser(data.user);
-        console.log('User signed in:', data.user);
+        const userWithPicture={
+          ...data.user,
+          picture:decoded.picture
+        }
+        localStorage.setItem('user', JSON.stringify(userWithPicture));
+        setUser(userWithPicture);
       } else {
         console.error('Backend user creation failed:', res.status, res.statusText);
       }
