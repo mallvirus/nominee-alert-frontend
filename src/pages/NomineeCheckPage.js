@@ -22,13 +22,13 @@ import {
   FaRedo,
   FaTimes
 } from 'react-icons/fa';
-import axios from 'axios';  // <-- Import axios for API calls
+import axios from 'axios';
+import { loadRazorpayScript } from '../utils/loadRazorpay';
 import './NomineeCheckPage.css';
 
-// Dummy user ID for demo; replace with your auth context/user state
-const LOGGED_IN_USER_ID = "user_123456";
+//const LOGGED_IN_USER_ID = 11;
 
-function NomineeCheckPage() {
+function NomineeCheckPage({user}) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [file, setFile] = useState(null);
@@ -43,8 +43,17 @@ function NomineeCheckPage() {
     file: ''
   });
   const fileInputRef = useRef();
+console.log({message:"User is",user});
+  // const user = {
+  //   id: LOGGED_IN_USER_ID,
+  //   name: 'Sushil Mall',
+  //   email: email || 'sushil907@gmail.com',
+  //   contact: phone || '9999999999',
+  // };
 
-  // Validation functions
+  const amountInPaise = 1000; // ₹2000
+
+  // Validation functions (same as your original)
   const validateEmail = (email) => {
     if (!email) return '';
     if (email.length > 50)
@@ -75,7 +84,7 @@ function NomineeCheckPage() {
     return '';
   };
 
-  // Handle input changes with validation
+  // Input handlers with validation
   const handleEmailChange = (value) => {
     setEmail(value);
     if (errors.email) {
@@ -101,7 +110,6 @@ function NomineeCheckPage() {
     }
   };
 
-  // Remove uploaded file
   const handleRemoveFile = () => {
     setFile(null);
     setFileName("");
@@ -111,17 +119,15 @@ function NomineeCheckPage() {
     }
   };
 
-  // Updated handleSubmit to call your API and handle response
+  // Form submit handler for validation API
   const handleSubmit = async (e) => {
     e.preventDefault();
     setToast({ type: "", message: "" });
 
-    // Validate inputs
     const emailError = email ? validateEmail(email) : '';
     const phoneError = phone ? validatePhone(phone) : '';
     const fileError = validateFile(file);
 
-    // Check if at least email or phone is provided
     if (!email.trim() && !phone.trim()) {
       setToast({ type: "error", message: "Please enter either Email or Phone Number." });
       return;
@@ -140,14 +146,13 @@ function NomineeCheckPage() {
 
     setLoading(true);
 
-    // Prepare form data for API call
     const formData = new FormData();
     if (email) formData.append("email", email);
     if (phone) formData.append("phoneNumber", phone);
     if (file) formData.append("policyDocument", file);
     const token = localStorage.getItem('token');
+
     try {
-      // Call your backend API
       const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}/api/policies/policyholders/validate`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -158,11 +163,9 @@ function NomineeCheckPage() {
       const data = response.data;
 
       if (data.successful === true && data.message === "User/Nominee Found") {
-        // Proceed to next step
         setToast({ type: "success", message: "User/Nominee Found. Proceeding..." });
         setStep(2);
       } else {
-        // Show error message from API or generic
         setToast({ type: "error", message: data.message || "Validation failed. Please check your details." });
       }
     } catch (error) {
@@ -172,17 +175,104 @@ function NomineeCheckPage() {
     }
   };
 
-  // Simulate Razorpay payment
-  const handlePayment = () => {
+  // Razorpay payment handler
+  const handlePayment = async () => {
     setPaymentLoading(true);
-    setTimeout(() => {
+    setToast({ type: '', message: '' });
+
+    const res = await loadRazorpayScript();
+    if (!res) {
+      setToast({ type: 'error', message: 'Failed to load Razorpay SDK. Please check your internet connection.' });
       setPaymentLoading(false);
-      setToast({ type: "success", message: "Payment successful! All nominees have been notified via SMS and Email." });
-      setStep(3);
-    }, 2500);
+      return;
+    }
+
+    try {
+      const createOrderResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/orders/create`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    userId: user.id,
+    serviceType: 'nominee_check',
+    pickupDate: new Date().toISOString(),
+    amount: amountInPaise,
+  }),
+});
+
+if (!createOrderResponse.ok) {
+  const errorText = await createOrderResponse.text();
+  setToast({ type: 'error', message: 'Order creation failed: ' + errorText });
+  setPaymentLoading(false);
+  return;
+}
+
+// Parse JSON body
+const responseData = await createOrderResponse.json();
+
+// Now access your data correctly
+const razorpayOrderId = responseData?.data?.razorpayOrderId;
+const currency = responseData?.data?.currency;
+const amount = responseData?.data?.amount;
+
+      
+
+      const options = {
+        key: process.env.REACT_APP_RAZORPAY_KEY,
+        amount,
+        currency,
+        name: 'Nominee Alert Service',
+        description: 'Nominee Check Payment',
+        order_id: razorpayOrderId,
+        handler: async function (response) {
+          console.log({createOrderResponse,razorpayOrderId,amount,currency});
+          console.log({message:"Razor Pay Response is ", response});
+          try {
+            const verifyResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/orders/verify`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
+
+            if (verifyResponse.ok) {
+              setToast({ type: 'success', message: 'Payment successful and verified!' });
+              setStep(3);
+            } else {
+              setToast({ type: 'error', message: 'Payment verification failed.' });
+            }
+          } catch (err) {
+            setToast({ type: 'error', message: 'Error verifying payment.' });
+          } finally {
+            setPaymentLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setToast({ type: 'info', message: 'Payment popup closed.' });
+            setPaymentLoading(false);
+          },
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+          contact: user.contact,
+        },
+        theme: {
+          color: '#3399cc',
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      setToast({ type: 'error', message: 'Payment failed: ' + error.message });
+      setPaymentLoading(false);
+    }
   };
 
-  // Reset for new upload
   const handleReset = () => {
     setEmail("");
     setPhone("");
@@ -198,7 +288,7 @@ function NomineeCheckPage() {
 
   return (
     <div className="nominee-check-page">
-      {/* Hero Section - Only show on step 1 */}
+      {/* Hero Section */}
       {step === 1 && (
         <section className="hero-section">
           <div className="hero-content">
@@ -457,7 +547,7 @@ function NomineeCheckPage() {
                 ) : (
                   <>
                     <FaCreditCard />
-                    Pay ₹2,000 Securely
+                    Pay ₹1 Securely
                     <FaArrowRight />
                   </>
                 )}
