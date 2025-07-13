@@ -145,12 +145,13 @@ function NomineeCheckPage() {
     if (email) formData.append("email", email);
     if (phone) formData.append("phoneNumber", phone);
     if (file) formData.append("policyDocument", file);
-
+    const token = localStorage.getItem('token');
     try {
       // Call your backend API
       const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}/api/policies/policyholders/validate`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
         },
       });
 

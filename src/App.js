@@ -59,6 +59,7 @@ function App() {
           picture:decoded.picture
         }
         localStorage.setItem('user', JSON.stringify(userWithPicture));
+        localStorage.setItem('token', data.token);
         setUser(userWithPicture);
       } else {
         console.error('Backend user creation failed:', res.status, res.statusText);

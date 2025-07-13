@@ -96,13 +96,20 @@ const Home = ({ user, onGoogleSignIn }) => {
   };
 
   const fetchNominees = useCallback(async () => {
+    
     if (user?.id) {
+      const token = localStorage.getItem('token');
       setLoading(true);
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_HOST_SERVER}/api/nominees/find/by/UserId?userId=${user.id}`,
-          { timeout: 10000 }
-        );
+       const response = await axios.get(
+  `${process.env.REACT_APP_HOST_SERVER}/api/nominees/find/by/UserId?userId=${user.id}`,
+  {
+    timeout: 600000,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  }
+);
         setNominees(response.data.data || []);
       } catch (error) {
         console.error('Error fetching nominee data:', error);
@@ -122,6 +129,7 @@ const Home = ({ user, onGoogleSignIn }) => {
 
   const handleRemove = async (nomineeId, policyId) => {
     const confirmMessage = `Are you sure you want to remove this nominee?\n\nThis action cannot be undone and the nominee will no longer have access to this policy information.`;
+    const token= localStorage.getItem('token');
 
     if (!window.confirm(confirmMessage)) {
       return;
@@ -130,7 +138,9 @@ const Home = ({ user, onGoogleSignIn }) => {
     try {
       await axios.delete(
         `${process.env.REACT_APP_HOST_SERVER}/api/nominees/${nomineeId}/policy/${policyId}`,
-        { timeout: 10000 }
+        { timeout: 10000, headers: {
+      'Authorization': `Bearer ${token}`,
+    } }
       );
       setNominees(nominees.filter(n => n.nomineeId !== nomineeId));
       showNotification('Nominee removed successfully! 🗑️', 'success');
@@ -281,6 +291,7 @@ const Home = ({ user, onGoogleSignIn }) => {
     const phoneError = validatePhone(nomineePhone?.trim());
     const docError = validateFile(policyDocument);
     const providerError = validateProviderName(providerName?.trim());
+    const token= localStorage.getItem('token');
 
     setErrors({
       nomineeEmail: emailError,
@@ -310,6 +321,7 @@ const Home = ({ user, onGoogleSignIn }) => {
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
           },
           timeout: 30000, // 30 second timeout
         }
@@ -372,12 +384,14 @@ const Home = ({ user, onGoogleSignIn }) => {
     }
 
     try {
+      const token =localStorage.getItem('token');
       const response = await axios.patch(
         `${process.env.REACT_APP_HOST_SERVER}/api/nominees/${nomineeId}/policy/${policyId}/update`,
         payload,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
           },
           timeout: 30000,
         }
