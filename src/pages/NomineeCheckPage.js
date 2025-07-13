@@ -547,7 +547,7 @@ const amount = responseData?.data?.amount;
                 ) : (
                   <>
                     <FaCreditCard />
-                    Pay ₹1 Securely
+                    Pay ₹2000 Securely
                     <FaArrowRight />
                   </>
                 )}
