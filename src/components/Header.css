@@ -29,6 +29,19 @@
 .logo:hover {
   transform: scale(1.02);
 }
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b; /* dark slate */
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+}
+
+.highlight-asset {
+  color: #22c55e; /* emerald green */
+  margin-left: 2px;
+}
 
 /* Navigation Menu */
 .header-nav {
@@ -148,6 +161,15 @@
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+}
+
+.header-logo {
+  max-width: 150px; /* Adjust max width as needed */
+  max-height: 40px; /* Match your header height */
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 /* Responsive Design */
