@@ -233,6 +233,36 @@ function NomineeCheckPage({ user }) {
             if (verifyResponse.ok) {
               setToast({ type: 'success', message: 'Payment successful and verified!' });
               setStep(3);
+              try {
+    const emailRequestBody = {
+      emailId: email || null,
+      phoneNumber: phone || null,
+    };
+
+    const sendResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/email/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(emailRequestBody),
+    });
+
+    if (sendResponse.ok) {
+      // Optionally show success toast or log
+      console.log('Notification sent successfully');
+    } else {
+      console.error('Failed to send notification');
+      // Optionally show error toast
+      setToast(prev => ({
+        type: 'error',
+        message: 'Payment verified but failed to send notification.'
+      }));
+    }
+  } catch (err) {
+    console.error('Error sending notification:', err);
+    setToast(prev => ({
+      type: 'error',
+      message: 'Payment verified but error occurred sending notification.'
+    }));
+  }
             } else {
               setToast({ type: 'error', message: 'Payment verification failed.' });
             }
