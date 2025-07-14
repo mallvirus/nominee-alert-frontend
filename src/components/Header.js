@@ -70,8 +70,15 @@ const Header = ({
   return (
     <header className="header">
       <div className="logo" onClick={onNavigateHome} style={{ cursor: 'pointer' }}>
-        🔔 Nominee Notify
-      </div>
+  <img 
+    src="/LogoUpdated.png" 
+    alt="KeepMyAsset Logo Icon" 
+    className="header-logo"
+  />
+  <span className="logo-text">
+    KeepMy<span className="highlight-asset">Asset</span>
+  </span>
+</div>
       
       {/* Navigation Menu for authenticated users */}
       {user && (
