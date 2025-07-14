@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   FaCloudUploadAlt,
   FaSpinner,
@@ -26,9 +26,7 @@ import axios from 'axios';
 import { loadRazorpayScript } from '../utils/loadRazorpay';
 import './NomineeCheckPage.css';
 
-//const LOGGED_IN_USER_ID = 11;
-
-function NomineeCheckPage({user}) {
+function NomineeCheckPage({ user }) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [file, setFile] = useState(null);
@@ -43,17 +41,18 @@ function NomineeCheckPage({user}) {
     file: ''
   });
   const fileInputRef = useRef();
-console.log({message:"User is",user});
-  // const user = {
-  //   id: LOGGED_IN_USER_ID,
-  //   name: 'Sushil Mall',
-  //   email: email || 'sushil907@gmail.com',
-  //   contact: phone || '9999999999',
-  // };
+  const toastRef = useRef();
 
-  const amountInPaise = 1000; // ₹2000
+  const amountInPaise = 200000; // ₹2000
 
-  // Validation functions (same as your original)
+  // Focus toast on message change for accessibility
+  useEffect(() => {
+    if (toast.message && toastRef.current) {
+      toastRef.current.focus();
+    }
+  }, [toast]);
+
+  // Validation functions
   const validateEmail = (email) => {
     if (!email) return '';
     if (email.length > 50)
@@ -189,32 +188,28 @@ console.log({message:"User is",user});
 
     try {
       const createOrderResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/orders/create`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    userId: user.id,
-    serviceType: 'nominee_check',
-    pickupDate: new Date().toISOString(),
-    amount: amountInPaise,
-  }),
-});
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          serviceType: 'nominee_check',
+          pickupDate: new Date().toISOString(),
+          amount: amountInPaise,
+        }),
+      });
 
-if (!createOrderResponse.ok) {
-  const errorText = await createOrderResponse.text();
-  setToast({ type: 'error', message: 'Order creation failed: ' + errorText });
-  setPaymentLoading(false);
-  return;
-}
+      if (!createOrderResponse.ok) {
+        const errorText = await createOrderResponse.text();
+        setToast({ type: 'error', message: 'Order creation failed: ' + errorText });
+        setPaymentLoading(false);
+        return;
+      }
 
-// Parse JSON body
-const responseData = await createOrderResponse.json();
+      const responseData = await createOrderResponse.json();
 
-// Now access your data correctly
-const razorpayOrderId = responseData?.data?.razorpayOrderId;
-const currency = responseData?.data?.currency;
-const amount = responseData?.data?.amount;
-
-      
+      const razorpayOrderId = responseData?.data?.razorpayOrderId;
+      const currency = responseData?.data?.currency;
+      const amount = responseData?.data?.amount;
 
       const options = {
         key: process.env.REACT_APP_RAZORPAY_KEY,
@@ -224,8 +219,6 @@ const amount = responseData?.data?.amount;
         description: 'Nominee Check Payment',
         order_id: razorpayOrderId,
         handler: async function (response) {
-          console.log({createOrderResponse,razorpayOrderId,amount,currency});
-          console.log({message:"Razor Pay Response is ", response});
           try {
             const verifyResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/orders/verify`, {
               method: 'POST',
@@ -337,7 +330,13 @@ const amount = responseData?.data?.amount;
 
           {/* Toast Notification */}
           {toast.message && (
-            <div className={`toast-notification ${toast.type}`}>
+            <div
+              className={`toast-notification ${toast.type}`}
+              tabIndex={-1}
+              ref={toastRef}
+              aria-live="assertive"
+              role="alert"
+            >
               {toast.type === 'error' && <FaExclamationTriangle />}
               {toast.type === 'success' && <FaCheckCircle />}
               {toast.type === 'info' && <FaInfoCircle />}
@@ -355,61 +354,46 @@ const amount = responseData?.data?.amount;
                     Policyholder Information
                   </h3>
 
-                  <div className="input-row">
-                    <label>
-                      <FaEnvelope style={{ color: '#3b82f6' }} />
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => handleEmailChange(e.target.value)}
-                      placeholder="e.g. john.doe@example.com"
-                      className={errors.email ? 'input-error' : ''}
-                      maxLength={50}
-                    />
-                    {errors.email && <div className="error-message"><FaExclamationTriangle />{errors.email}</div>}
-
-                    <div style={{
-                      textAlign: 'center',
-                      margin: '2rem 0',
-                      position: 'relative'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '0',
-                        right: '0',
-                        height: '2px',
-                        background: 'linear-gradient(90deg, transparent, #d1d5db, transparent)'
-                      }}></div>
-                      <span style={{
-                        background: 'white',
-                        padding: '0 2rem',
-                        color: '#6b7280',
-                        fontWeight: '600',
-                        position: 'relative',
-                        fontSize: '1.125rem'
-                      }}>OR</span>
+                  <div className="input-row-horizontal">
+                    <div className="input-group">
+                      <label>
+                        <FaEnvelope style={{ color: '#3b82f6' }} />
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => handleEmailChange(e.target.value)}
+                        placeholder="e.g. john.doe@example.com"
+                        className={errors.email ? 'input-error' : ''}
+                        maxLength={50}
+                      />
+                      {errors.email && <div className="error-message"><FaExclamationTriangle />{errors.email}</div>}
                     </div>
 
-                    <label>
-                      <FaPhoneAlt style={{ color: '#3b82f6' }} />
-                      Phone Number
-                      <FaInfoCircle
-                        style={{ color: '#9ca3af', fontSize: '1rem', cursor: 'help' }}
-                        title="10-digit Indian mobile number (without +91 or 0 prefix)"
+                    <div className="or-separator">
+                      <span>OR</span>
+                    </div>
+
+                    <div className="input-group">
+                      <label>
+                        <FaPhoneAlt style={{ color: '#3b82f6' }} />
+                        Phone Number
+                        <FaInfoCircle
+                          style={{ color: '#9ca3af', fontSize: '1rem', cursor: 'help' }}
+                          title="10-digit Indian mobile number (without +91 or 0 prefix)"
+                        />
+                      </label>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => handlePhoneChange(e.target.value)}
+                        placeholder="e.g. 9876543210"
+                        className={errors.phone ? 'input-error' : ''}
+                        maxLength={10}
                       />
-                    </label>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => handlePhoneChange(e.target.value)}
-                      placeholder="e.g. 9876543210"
-                      className={errors.phone ? 'input-error' : ''}
-                      maxLength={10}
-                    />
-                    {errors.phone && <div className="error-message"><FaExclamationTriangle />{errors.phone}</div>}
+                      {errors.phone && <div className="error-message"><FaExclamationTriangle />{errors.phone}</div>}
+                    </div>
                   </div>
                 </div>
 
@@ -547,7 +531,7 @@ const amount = responseData?.data?.amount;
                 ) : (
                   <>
                     <FaCreditCard />
-                    Pay ₹2000 Securely
+                    Pay ₹2,000 Securely
                     <FaArrowRight />
                   </>
                 )}
