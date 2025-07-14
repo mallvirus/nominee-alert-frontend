@@ -43,7 +43,7 @@ function NomineeCheckPage({ user }) {
   const fileInputRef = useRef();
   const toastRef = useRef();
 
-  const amountInPaise = 200000; // ₹2000
+  const amountInPaise = 1000; // ₹2000
 
   // Focus toast on message change for accessibility
   useEffect(() => {
