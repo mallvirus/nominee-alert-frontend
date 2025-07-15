@@ -176,6 +176,7 @@ function NomineeCheckPage({ user }) {
 
   // Razorpay payment handler
   const handlePayment = async () => {
+    const token = localStorage.getItem('token');
     setPaymentLoading(true);
     setToast({ type: '', message: '' });
 
@@ -189,7 +190,9 @@ function NomineeCheckPage({ user }) {
     try {
       const createOrderResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/orders/create`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+         },
         body: JSON.stringify({
           userId: user.id,
           serviceType: 'nominee_check',
@@ -222,7 +225,9 @@ function NomineeCheckPage({ user }) {
           try {
             const verifyResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/orders/verify`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+               },
               body: JSON.stringify({
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,
@@ -241,7 +246,9 @@ function NomineeCheckPage({ user }) {
 
     const sendResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/email/send`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+       },
       body: JSON.stringify(emailRequestBody),
     });
 
