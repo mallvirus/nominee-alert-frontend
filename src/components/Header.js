@@ -73,7 +73,6 @@ const Header = ({
      <div onClick={onNavigateHome} style={{ cursor: 'pointer' }}>
   <KeepMyAssetLogo />
 </div>
-
       
       {/* Navigation Menu for authenticated users */}
       {user && (
