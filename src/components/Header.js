@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import './Header.css';
+import KeepMyAssetLogo from './KeepMyAssetLogo';
 
 // ID for the Google button container. It MUST be unique.
 // This ID will be used by the Google library to find the element.
@@ -69,16 +70,10 @@ const Header = ({
 
   return (
     <header className="header">
-      <div className="logo" onClick={onNavigateHome} style={{ cursor: 'pointer' }}>
-  <img 
-    src="/LogoUpdated.png" 
-    alt="KeepMyAsset Logo Icon" 
-    className="header-logo"
-  />
-  <span className="logo-text">
-    KeepMy<span className="highlight-asset">Asset</span>
-  </span>
+     <div onClick={onNavigateHome} style={{ cursor: 'pointer' }}>
+  <KeepMyAssetLogo />
 </div>
+
       
       {/* Navigation Menu for authenticated users */}
       {user && (

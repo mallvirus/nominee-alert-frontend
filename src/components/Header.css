@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 /* Updated Header Styles */
 .header {
   display: flex;
@@ -36,6 +37,11 @@
   font-family: 'Poppins', sans-serif;
   display: flex;
   align-items: center;
+}
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .highlight-asset {
