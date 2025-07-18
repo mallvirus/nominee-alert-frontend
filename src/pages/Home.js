@@ -763,7 +763,7 @@ const Home = ({ user, onGoogleSignIn }) => {
                     </span>
                     <a
                       className="document-link"
-                      href={`${process.env.REACT_APP_HOST_SERVER}/${nominee.documentUrl}`}
+                      href={`${nominee.documentUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
