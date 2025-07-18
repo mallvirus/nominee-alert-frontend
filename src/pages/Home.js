@@ -3,6 +3,7 @@ import axios from 'axios';
 import './Home.css';
 import Modal from 'react-modal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import KeepMyAssetLogo from '../Image/Logo.png'
 import {
   FaTrash,
   FaPlus,
@@ -475,7 +476,7 @@ const Home = ({ user, onGoogleSignIn }) => {
         {/* Hero Section */}
         <section className="hero">
           <div className="left-illustration">
-            <FaShieldAlt className="protection-icon" />
+          <img src={KeepMyAssetLogo} alt="Responsive Image" style={{ width: '500px', height: '350px' }}/>
           </div>
           <div className="hero-text">
             <h1>
