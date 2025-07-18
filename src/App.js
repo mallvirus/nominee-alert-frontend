@@ -4,14 +4,20 @@ import Home from './pages/Home';
 import NomineeCheckPage from './pages/NomineeCheckPage';
 import './App.css';
 import Footer from './components/Footer';
+import ApplicationOverview from './pages/ApplicationOverview'; //
 
 // Replace with your actual Google Client ID
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'your-google-client-id';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' or 'nominee-check'
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' or 'nominee-check' or 'application-overview'
   const [loading, setLoading] = useState(true);
+
+  const navigateToApplicationOverview = () => {
+    console.log('Navigating to Application Overview page');
+    setCurrentPage('application-overview');
+  };
 
   useEffect(() => {
     // Check if user is already logged in (from localStorage or sessionStorage)
@@ -26,6 +32,9 @@ function App() {
     }
     setLoading(false);
   }, []);
+
+  const navigateToHome = () => setCurrentPage('home');
+  const navigateToNomineeCheck = () => setCurrentPage('nominee-check');
 
   const handleGoogleResponse = async (response) => {
     if (!response.credential) {
@@ -42,9 +51,9 @@ function App() {
           .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
           .join('')
       );
-      const decoded = JSON.parse(jsonPayload);  
+      const decoded = JSON.parse(jsonPayload);
 
-      const userInfo = { name: decoded.name, email: decoded.email,picture: decoded.picture };
+      const userInfo = { name: decoded.name, email: decoded.email, picture: decoded.picture };
 
       const res = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/user/create`, {
         method: 'POST',
@@ -54,13 +63,16 @@ function App() {
 
       if (res.ok) {
         const data = await res.json();
-        const userWithPicture={
+        const userWithPicture = {
           ...data.user,
-          picture:decoded.picture
-        }
+          picture: decoded.picture,
+        };
         localStorage.setItem('user', JSON.stringify(userWithPicture));
         localStorage.setItem('token', data.token);
         setUser(userWithPicture);
+
+        // Navigate to home after successful login
+        navigateToHome();
       } else {
         console.error('Backend user creation failed:', res.status, res.statusText);
       }
@@ -101,10 +113,10 @@ function App() {
 
     const notification = document.createElement('div');
     notification.className = 'app-notification';
-    
+
     const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
     const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
-    
+
     notification.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;">
         <div style="display:flex;align-items:center;gap:0.75rem;flex:1;">
@@ -188,9 +200,6 @@ function App() {
     notification.autoRemoveTimer = autoRemoveTimer;
   };
 
-  const navigateToHome = () => setCurrentPage('home');
-  const navigateToNomineeCheck = () => setCurrentPage('nominee-check');
-
   if (loading) {
     return (
       <div
@@ -230,15 +239,23 @@ function App() {
         onNavigateHome={navigateToHome}
         onNavigateNomineeCheck={navigateToNomineeCheck}
         currentPage={currentPage}
+        onNavigateApplicationOverview={navigateToApplicationOverview}
       />
 
       <main>
         {currentPage === 'home' && (
-          <Home user={user} onGoogleSignIn={handleGoogleSignIn} />
+          <Home
+            user={user}
+            onGoogleSignIn={handleGoogleSignIn}
+            onNavigateApplicationOverview={navigateToApplicationOverview}
+          />
         )}
         {currentPage === 'nominee-check' && <NomineeCheckPage user={user} />}
+        {currentPage === 'application-overview' && (
+          <ApplicationOverview user={user} onLoginSuccess={navigateToHome} />
+        )}
       </main>
-      
+
       <Footer />
     </div>
   );

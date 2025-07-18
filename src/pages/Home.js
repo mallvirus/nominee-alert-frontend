@@ -38,7 +38,7 @@ import {
 
 Modal.setAppElement('#root');
 
-const Home = ({ user, onGoogleSignIn }) => {
+const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
   const [nominees, setNominees] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -489,13 +489,15 @@ const Home = ({ user, onGoogleSignIn }) => {
               when it matters most. Don't let silence steal what your family deserves.
             </p>
             <div className="nominee-buttons">
-              <button 
-                className="nominee-btn view"
-                onClick={handleCheckNomineeClick}
-              >
-                <FaEye />
-                Application Overview
-              </button>
+            <button 
+  className="nominee-btn view"
+  onClick={()=>{
+    console.log('Application Overview button clicked');
+    onNavigateApplicationOverview()}} // call the prop function
+>
+  <FaEye />
+  Application Overview
+</button>
             </div>
           </div>
         </section>
