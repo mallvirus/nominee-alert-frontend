@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import './Header.css';
 import KeepMyAssetLogo from './KeepMyAssetLogo';
+import { Helmet } from 'react-helmet';
 
 // ID for the Google button container. It MUST be unique.
 // This ID will be used by the Google library to find the element.
@@ -69,6 +70,21 @@ const Header = ({
   }, [user]); // Only re-run when the 'user' prop changes
 
   return (
+    <>
+    <Helmet>
+            <title>Header - keepmyasset</title>
+            <meta name="description" content="Header with keepmyasset" />
+    
+            {/* Open Graph */}
+            <meta property="og:title" content="Header - keepmyasset" />
+            <meta property="og:description" content="Header with keepmyasset." />
+            <meta property="og:url" content="https://keepmyasset.com" />
+            <meta property="og:type" content="website" />
+    
+            {/* Twitter Card */}
+            <meta name="twitter:title" content="Header - keepmyasset" />
+            <meta name="twitter:description" content="Header with keepmyasset." />
+    </Helmet>
     <header className="header">
      <div onClick={onNavigateHome} style={{ cursor: 'pointer' }}>
   <KeepMyAssetLogo />
@@ -119,6 +135,7 @@ const Header = ({
         )}
       </div>
     </header>
+    </>
   );
 };
 

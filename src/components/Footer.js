@@ -1,8 +1,24 @@
 import { FaLinkedin, FaFacebookF, FaTwitter, FaWhatsapp, FaInstagram } from "react-icons/fa";
 import './Footer.css'; // Make sure you import the CSS
+import { Helmet } from 'react-helmet';
 
 const Footer = () => {
   return (
+    <>
+    <Helmet>
+        <title>Footer - keepmyasset</title>
+        <meta name="description" content="Footer with keepmyasset" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Footer - keepmyasset" />
+        <meta property="og:description" content="Footer with keepmyasset." />
+        <meta property="og:url" content="https://keepmyasset.com" />
+        <meta property="og:type" content="website" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:title" content="Footer - keepmyasset" />
+        <meta name="twitter:description" content="Footer with keepmyasset." />
+      </Helmet>
     <footer className="footer">
       <div className="footer-links-container">
         <div className="footer-links-left">
@@ -28,6 +44,7 @@ const Footer = () => {
         &copy; {new Date().getFullYear()} Nominee Notify. All rights reserved.
       </div>
     </footer>
+    </>
   );
 };
 

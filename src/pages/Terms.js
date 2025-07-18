@@ -1,8 +1,24 @@
 import React from 'react';
 import './Terms.css'; // Optional: for custom styling
+import { Helmet } from 'react-helmet';
 
 const Terms = () => {
   return (
+    <>
+      <Helmet>
+            <title>Terms - keepmyasset</title>
+            <meta name="description" content="Terms with keepmyasset" />
+    
+            {/* Open Graph */}
+            <meta property="og:title" content="Terms - keepmyasset" />
+            <meta property="og:description" content="Terms with keepmyasset." />
+            <meta property="og:url" content="https://keepmyasset.com" />
+            <meta property="og:type" content="website" />
+    
+            {/* Twitter Card */}
+            <meta name="twitter:title" content="Terms - keepmyasset" />
+            <meta name="twitter:description" content="Terms with keepmyasset." />
+    </Helmet>
     <div className="page-container terms-page">
       <h1>Terms of Service</h1>
       <p>
@@ -89,6 +105,7 @@ const Terms = () => {
         .
       </p>
     </div>
+    </>
   );
 };
 

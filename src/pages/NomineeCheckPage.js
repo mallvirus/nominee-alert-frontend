@@ -25,6 +25,7 @@ import {
 import axios from 'axios';
 import { loadRazorpayScript } from '../utils/loadRazorpay';
 import './NomineeCheckPage.css';
+import { Helmet } from 'react-helmet';
 
 function NomineeCheckPage({ user }) {
   const [email, setEmail] = useState("");
@@ -317,6 +318,21 @@ function NomineeCheckPage({ user }) {
   };
 
   return (
+    <>
+    <Helmet>
+        <title>Nominee Check - keepmyasset</title>
+        <meta name="description" content="Check nominee details easily with Your Site Name." />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Nominee Check - keepmyasset" />
+        <meta property="og:description" content="Check nominee details easily with Your Site Name." />
+        <meta property="og:url" content="https://keepmyasset.com" />
+        <meta property="og:type" content="website" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:title" content="Nominee Check - keepmyasset" />
+        <meta name="twitter:description" content="Check nominee details easily with keepmyasset" />
+      </Helmet>
     <div className="nominee-check-page">
       {/* Hero Section */}
       {step === 1 && (
@@ -621,6 +637,7 @@ function NomineeCheckPage({ user }) {
         </div>
       </section>
     </div>
+    </>
   );
 }
 

@@ -4,6 +4,7 @@ import './Home.css';
 import Modal from 'react-modal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import KeepMyAssetLogo from '../Image/Logo.png'
+import { Helmet } from 'react-helmet';
 import {
   FaTrash,
   FaPlus,
@@ -654,7 +655,23 @@ const Home = ({ user, onGoogleSignIn }) => {
 
   // Authenticated user dashboard
   return (
-    <div className="home-layout">
+    <>
+    <Helmet>
+        <title>Home Page - keepmyasset</title>
+        <meta name="description" content="This is the home page description for SEO." />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content="Home Page - keepmyasset" />
+        <meta property="og:description" content="This is the home page description for SEO." />
+        <meta property="og:url" content="https://keepmyasset.com" />
+        <meta property="og:type" content="website" />
+
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Home Page - keepmyasset" />
+        <meta name="twitter:description" content="This is the home page description for SEO." />
+  </Helmet>
+      <div className="home-layout">
       <section className="user-info-section">
         <div className="section-header">
           <h3>
@@ -1128,6 +1145,8 @@ const Home = ({ user, onGoogleSignIn }) => {
         </Modal>
       </section>
     </div>
+    </>
+    
   );
 };
 

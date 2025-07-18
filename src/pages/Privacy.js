@@ -1,8 +1,24 @@
 import React from 'react';
 import './Privacy.css'; // Optional for custom styling
+import { Helmet } from 'react-helmet';
 
 const Privacy = () => {
   return (
+    <>
+    <Helmet>
+            <title>Privacy - keepmyasset</title>
+            <meta name="description" content="Privacy with keepmyasset" />
+    
+            {/* Open Graph */}
+            <meta property="og:title" content="Privacy - keepmyasset" />
+            <meta property="og:description" content="Privacy with keepmyasset." />
+            <meta property="og:url" content="https://keepmyasset.com" />
+            <meta property="og:type" content="website" />
+    
+            {/* Twitter Card */}
+            <meta name="twitter:title" content="Privacy - keepmyasset" />
+            <meta name="twitter:description" content="Privacy with keepmyasset." />
+    </Helmet>
     <div className="page-container privacy-page">
       <h1>Privacy Policy</h1>
       <p>
@@ -85,6 +101,7 @@ const Privacy = () => {
         .
       </p>
     </div>
+    </>
   );
 };
 
