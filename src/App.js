@@ -4,25 +4,37 @@ import Home from './pages/Home';
 import NomineeCheckPage from './pages/NomineeCheckPage';
 import './App.css';
 import Footer from './components/Footer';
-import ApplicationOverview from './pages/ApplicationOverview'; //
-import { Routes, Route } from 'react-router-dom'; 
+import ApplicationOverview from './pages/ApplicationOverview';
 import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Replace with your actual Google Client ID
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'your-google-client-id';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' or 'nominee-check' or 'application-overview'
+  const [currentPage, setCurrentPage] = useState('home'); // Existing logic unchanged
   const [loading, setLoading] = useState(true);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Keep your navigation functions, but sync them with the browser URL as well
+  const navigateToHome = () => {
+    setCurrentPage('home');
+    if (location.pathname !== "/") navigate("/");
+  };
+  const navigateToNomineeCheck = () => {
+    setCurrentPage('nominee-check');
+    if (location.pathname !== "/nominee-check") navigate("/nominee-check");
+  };
   const navigateToApplicationOverview = () => {
-    console.log('Navigating to Application Overview page');
     setCurrentPage('application-overview');
+    if (location.pathname !== "/application-overview") navigate("/application-overview");
   };
 
   useEffect(() => {
-    // Check if user is already logged in (from localStorage or sessionStorage)
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       try {
@@ -35,15 +47,11 @@ function App() {
     setLoading(false);
   }, []);
 
-  const navigateToHome = () => setCurrentPage('home');
-  const navigateToNomineeCheck = () => setCurrentPage('nominee-check');
-
   const handleGoogleResponse = async (response) => {
     if (!response.credential) {
       console.error('Google sign-in failed: No credential received.');
       return;
     }
-
     try {
       const base64Url = response.credential.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -72,8 +80,6 @@ function App() {
         localStorage.setItem('user', JSON.stringify(userWithPicture));
         localStorage.setItem('token', data.token);
         setUser(userWithPicture);
-
-        // Navigate to home after successful login
         navigateToHome();
       } else {
         console.error('Backend user creation failed:', res.status, res.statusText);
@@ -87,38 +93,30 @@ function App() {
     setUser(null);
     localStorage.removeItem('user');
     setCurrentPage('home');
-
-    // Sign out from Google
     if (window.google?.accounts?.id) {
       window.google.accounts.id.disableAutoSelect();
     }
-
     showNotification('You have been logged out successfully.', 'success');
   };
 
   const handleGoogleSignIn = () => {
-    // This function will be called when user clicks "Check If You're a Nominee"
-    // The actual sign-in is handled by the Google button in the Header component
     if (window.google?.accounts?.id) {
       window.google.accounts.id.prompt();
     }
   };
 
   const showNotification = (message, type = 'success') => {
-    // Remove any existing notifications first
+    // ...Keep your existing notification logic here...
     const existingNotifications = document.querySelectorAll('.app-notification');
     existingNotifications.forEach(notification => {
       if (document.body.contains(notification)) {
         document.body.removeChild(notification);
       }
     });
-
     const notification = document.createElement('div');
     notification.className = 'app-notification';
-
     const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
     const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
-
     notification.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;">
         <div style="display:flex;align-items:center;gap:0.75rem;flex:1;">
@@ -149,7 +147,6 @@ function App() {
         >×</button>
       </div>
     `;
-
     notification.style.cssText = `
       position:fixed;top:20px;right:20px;z-index:9999;
       background:${bgColor};color:white;padding:1rem 1.5rem;
@@ -159,8 +156,6 @@ function App() {
       max-width:400px;word-wrap:break-word;
       min-width:300px;
     `;
-
-    // Add animation keyframes if not already added
     if (!document.getElementById('notification-styles')) {
       const style = document.createElement('style');
       style.id = 'notification-styles';
@@ -183,10 +178,7 @@ function App() {
       `;
       document.head.appendChild(style);
     }
-
     document.body.appendChild(notification);
-
-    // Auto-remove after 6 seconds (optional)
     const autoRemoveTimer = setTimeout(() => {
       if (document.body.contains(notification)) {
         notification.style.animation = 'fadeOut 0.3s ease-in';
@@ -197,8 +189,6 @@ function App() {
         }, 300);
       }
     }, 6000);
-
-    // Store timer reference to clear it if manually closed
     notification.autoRemoveTimer = autoRemoveTimer;
   };
 
@@ -231,6 +221,7 @@ function App() {
     );
   }
 
+  // --- Minimal Routing for Privacy/Terms, normal for rest ---
   return (
     <div className="App">
       <Header
@@ -244,19 +235,26 @@ function App() {
         onNavigateApplicationOverview={navigateToApplicationOverview}
       />
 
-      <main>
-        {currentPage === 'home' && (
-          <Home
-            user={user}
-            onGoogleSignIn={handleGoogleSignIn}
-            onNavigateApplicationOverview={navigateToApplicationOverview}
-          />
-        )}
-        {currentPage === 'nominee-check' && <NomineeCheckPage user={user} />}
-        {currentPage === 'application-overview' && (
-          <ApplicationOverview user={user} onLoginSuccess={navigateToHome} />
-        )}
-      </main>
+      {/* Route-based rendering for Privacy/Terms */}
+      {location.pathname === '/privacy' ? (
+        <Privacy />
+      ) : location.pathname === '/terms' ? (
+        <Terms />
+      ) : (
+        <main>
+          {currentPage === 'home' && (
+            <Home
+              user={user}
+              onGoogleSignIn={handleGoogleSignIn}
+              onNavigateApplicationOverview={navigateToApplicationOverview}
+            />
+          )}
+          {currentPage === 'nominee-check' && <NomineeCheckPage user={user} />}
+          {currentPage === 'application-overview' && (
+            <ApplicationOverview user={user} onLoginSuccess={navigateToHome} />
+          )}
+        </main>
+      )}
 
       <Footer />
     </div>
