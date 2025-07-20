@@ -5,6 +5,8 @@ import NomineeCheckPage from './pages/NomineeCheckPage';
 import './App.css';
 import Footer from './components/Footer';
 import ApplicationOverview from './pages/ApplicationOverview'; //
+import { Routes, Route } from 'react-router-dom'; 
+import Privacy from './pages/Privacy';
 
 // Replace with your actual Google Client ID
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'your-google-client-id';

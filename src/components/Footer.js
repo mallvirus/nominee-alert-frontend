@@ -1,51 +1,80 @@
-import { FaLinkedin, FaFacebookF, FaTwitter, FaWhatsapp, FaInstagram } from "react-icons/fa";
-import './Footer.css'; // Make sure you import the CSS
+import { FaFacebookF, FaTwitter, FaWhatsapp, FaInstagram } from "react-icons/fa";
+import { Link } from 'react-router-dom';
+import './Footer.css';
 import { Helmet } from 'react-helmet';
 
-const Footer = () => {
-  return (
-    <>
-    <Helmet>
-        <title>Footer - keepmyasset</title>
-        <meta name="description" content="Footer with keepmyasset" />
-
-        {/* Open Graph */}
-        <meta property="og:title" content="Footer - keepmyasset" />
-        <meta property="og:description" content="Footer with keepmyasset." />
-        <meta property="og:url" content="https://keepmyasset.com" />
-        <meta property="og:type" content="website" />
-
-        {/* Twitter Card */}
-        <meta name="twitter:title" content="Footer - keepmyasset" />
-        <meta name="twitter:description" content="Footer with keepmyasset." />
-      </Helmet>
+const Footer = () => (
+  <>
+    <Helmet>{/* Open Graph and Twitter card tags */}</Helmet>
     <footer className="footer">
       <div className="footer-links-container">
-        <div className="footer-links-left">
-          <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-          <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        <div className="footer-branding">
+          <span className="footer-logo">
+            <span className="logo-main">Keep</span>
+            <span className="logo-accent">MyAsset</span>
+          </span>
+          <span className="footer-slogan">
+            Securing Your Digital Legacy
+          </span>
         </div>
-        <div className="footer-links-right">
-          <a href="https://wa.me/918177009416" target="_blank" rel="noopener noreferrer">
-    <FaWhatsapp />
-  </a>
-          <a href="https://www.instagram.com/keepmyassets/" target="_blank" rel="noopener noreferrer">
-            <FaInstagram />
-          </a>
-          <a href="https://www.facebook.com/profile.php?id=61577883366291" target="_blank" rel="noopener noreferrer">
+        <div className="footer-links-center">
+          {/* First row: Main navigation */}
+          <div className="footer-links-row">
+            <Link to="/about">About</Link>
+            <Link to="/features">Features</Link>
+            <Link to="/faq">FAQ</Link>
+            <Link to="/contact">Contact</Link>
+          </div>
+          {/* Second row: Legal links */}
+          <div className="footer-legal-row">
+            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/terms">Terms & Conditions</Link>
+          </div>
+        </div>
+        <div className="footer-social-icons">
+          <a
+            href="https://www.facebook.com/keepmyasset/"
+            target="_blank"
+            rel="noopener"
+            className="social-icon facebook"
+            aria-label="Facebook"
+          >
             <FaFacebookF />
           </a>
-          <a href="https://x.com/keepmyasset" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://twitter.com/keepmyasset/"
+            target="_blank"
+            rel="noopener"
+            className="social-icon twitter"
+            aria-label="Twitter"
+          >
             <FaTwitter />
+          </a>
+          <a
+            href="https://wa.me/919999999999"
+            target="_blank"
+            rel="noopener"
+            className="social-icon whatsapp"
+            aria-label="WhatsApp"
+          >
+            <FaWhatsapp />
+          </a>
+          <a
+            href="https://instagram.com/keepmyasset/"
+            target="_blank"
+            rel="noopener"
+            className="social-icon instagram"
+            aria-label="Instagram"
+          >
+            <FaInstagram />
           </a>
         </div>
       </div>
       <div className="footer-copy">
-        &copy; {new Date().getFullYear()} Nominee Notify. All rights reserved.
+        © {new Date().getFullYear()} keepmyasset. All rights reserved.
       </div>
     </footer>
-    </>
-  );
-};
+  </>
+);
 
 export default Footer;
