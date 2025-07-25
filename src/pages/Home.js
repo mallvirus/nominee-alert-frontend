@@ -476,9 +476,9 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
       <div className="home-layout">
         {/* Hero Section */}
         <section className="hero">
-          <div className="left-illustration">
+          {/* <div className="left-illustration">
           <img src={KeepMyAssetLogo} alt="Responsive Image" style={{ width: '500px', height: '350px' }}/>
-          </div>
+          </div> */}
           <div className="hero-text">
             <h1>
               <span className="highlight">₹82,000 Crore</span> lies unclaimed in India

@@ -596,16 +596,17 @@ section {
 
 .data-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--space-2xl);
   margin-bottom: var(--space-2xl);
   position: relative;
   z-index: 1;
+  padding: 0 1rem; /* Add horizontal padding for mobile */
 }
 
 .data-card {
   background: var(--gradient-card);
-  padding: var(--space-2xl);
+  padding: 2rem 1.25rem;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   text-align: center;
@@ -614,6 +615,10 @@ section {
   border-left: 6px solid;
   position: relative;
   overflow: hidden;
+  min-width: 0; /* Prevent overflow on small screens */
+  max-width: 100%;
+  box-sizing: border-box;
+  touch-action: manipulation; /* Improves touch responsiveness */
 }
 
 .data-card::before {
@@ -621,36 +626,19 @@ section {
   position: absolute;
   top: 0;
   right: 0;
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   opacity: 0.1;
   border-radius: 50%;
   transition: var(--transition);
 }
 
-.data-card:nth-child(1) {
-  border-left-color: var(--primary-blue);
-}
-
-.data-card:nth-child(1)::before {
-  background: var(--primary-blue);
-}
-
-.data-card:nth-child(2) {
-  border-left-color: var(--accent-green);
-}
-
-.data-card:nth-child(2)::before {
-  background: var(--accent-green);
-}
-
-.data-card:nth-child(3) {
-  border-left-color: var(--accent-orange);
-}
-
-.data-card:nth-child(3)::before {
-  background: var(--accent-orange);
-}
+.data-card:nth-child(1) { border-left-color: var(--primary-blue); }
+.data-card:nth-child(1)::before { background: var(--primary-blue); }
+.data-card:nth-child(2) { border-left-color: var(--accent-green); }
+.data-card:nth-child(2)::before { background: var(--accent-green); }
+.data-card:nth-child(3) { border-left-color: var(--accent-orange); }
+.data-card:nth-child(3)::before { background: var(--accent-orange); }
 
 .data-card:hover {
   transform: translateY(-8px) scale(1.02);
@@ -663,11 +651,12 @@ section {
 }
 
 .data-card-icon {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
+  font-size: 3rem;
+  margin-bottom: 1.25rem;
   display: block;
   margin-left: auto;
   margin-right: auto;
+  transition: transform 0.2s;
 }
 
 .data-card:hover .data-card-icon {
@@ -676,21 +665,72 @@ section {
 
 .data-card h4 {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--gray-900);
-  margin-bottom: var(--space-md);
+  margin-bottom: 1rem;
+  line-height: 1.2;
 }
 
 .amount {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 800;
   background: linear-gradient(135deg, var(--accent-red) 0%, #dc2626 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: var(--space-md);
+  margin-bottom: 1rem;
   font-family: var(--font-heading);
+}
+
+.reason {
+  font-size: 1rem;
+  color: var(--gray-700);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .data-content {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 0 0.5rem;
+  }
+  .data-card {
+    padding: 1.25rem 0.75rem;
+    font-size: 0.98rem;
+  }
+  .data-card-icon {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
+  .data-card h4 {
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+  }
+  .amount {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+  .reason {
+    font-size: 0.98rem;
+  }
+  .data-card::before {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* Optional: Slightly larger cards on tablets */
+@media (min-width: 601px) and (max-width: 900px) {
+  .data-content {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .data-card {
+    padding: 1.5rem 1rem;
+  }
 }
 
 .reason {
