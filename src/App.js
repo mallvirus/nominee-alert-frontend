@@ -5,8 +5,6 @@ import NomineeCheckPage from './pages/NomineeCheckPage';
 import './App.css';
 import Footer from './components/Footer';
 import ApplicationOverview from './pages/ApplicationOverview';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // Replace with your actual Google Client ID
@@ -236,11 +234,7 @@ function App() {
       />
 
       {/* Route-based rendering for Privacy/Terms */}
-      {location.pathname === '/privacy' ? (
-        <Privacy />
-      ) : location.pathname === '/terms' ? (
-        <Terms />
-      ) : (
+       (
         <main>
           {currentPage === 'home' && (
             <Home
@@ -254,7 +248,7 @@ function App() {
             <ApplicationOverview user={user} onLoginSuccess={navigateToHome} />
           )}
         </main>
-      )}
+      )
 
       <Footer />
     </div>

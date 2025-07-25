@@ -27,8 +27,8 @@ const Footer = () => (
           </div>
           {/* Second row: Legal links */}
           <div className="footer-legal-row">
-            <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/terms">Terms & Conditions</Link>
+            <a href="/Privacy.html">Privacy Policy</a>
+<a href="/Terms.html">Terms & Conditions</a>
           </div>
         </div>
         <div className="footer-social-icons">

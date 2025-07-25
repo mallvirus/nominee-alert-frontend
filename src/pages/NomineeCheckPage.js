@@ -245,7 +245,7 @@ function NomineeCheckPage({ user }) {
       phoneNumber: phone || null,
     };
 
-    const sendResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/email/send`, {
+    const sendResponse = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/email/send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
