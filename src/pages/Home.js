@@ -665,7 +665,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
         {/* Open Graph tags */}
         <meta property="og:title" content="Home Page - keepmyasset" />
         <meta property="og:description" content="This is the home page description for SEO." />
-        <meta property="og:url" content="https://keepmyasset.com" />
+        <meta property="og:url" content="https://www.keepmyasset.com" />
         <meta property="og:type" content="website" />
 
         {/* Twitter Card tags */}

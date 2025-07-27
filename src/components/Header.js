@@ -78,7 +78,7 @@ const Header = ({
             {/* Open Graph */}
             <meta property="og:title" content="Header - keepmyasset" />
             <meta property="og:description" content="Header with keepmyasset." />
-            <meta property="og:url" content="https://keepmyasset.com" />
+            <meta property="og:url" content="https://www.keepmyasset.com" />
             <meta property="og:type" content="website" />
     
             {/* Twitter Card */}
