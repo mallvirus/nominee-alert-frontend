@@ -3,33 +3,487 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Privacy Policy</title>
-  <link rel="stylesheet" href="/public/Privacy.css" />
+  <title>Privacy Policy - KeepMyAsset</title>
+  <!-- Poppins font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Global resets and body */
+    body {
+      margin: 0;
+      font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+      background: #f5f7fa;
+      color: #222;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    a:focus,
+    button:focus {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .header-logo-link {
+      text-decoration: none;
+      outline: none;
+    }
+    .keepmyasset-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    .keepmyasset-logo:hover,
+    .keepmyasset-logo:focus {
+      transform: translateY(-3px);
+      outline: none;
+    }
+    .keepmyasset-logo-icon {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .keepmyasset-logo-text {
+      font-weight: 700;
+      font-size: 1.45rem;
+      white-space: nowrap;
+      user-select: none;
+      padding: 8px 16px;
+      border-radius: 24px;
+      box-shadow: 0 2px 8px rgba(0, 183, 97, 0.3);
+      background-color: #f0f9f4;
+      color: #121212;
+      display: inline-block;
+      line-height: 1;
+    }
+    .keepmyasset-logo-asset {
+      color: #00B761;
+    }
+    /* Navigation */
+    .header-nav {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+   
+    /* Main content - Privacy */
+    main {
+      max-width: 900px;
+      margin: 3rem auto 2rem auto;
+      padding: 2rem 3rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      font-size: 1.05rem;
+      color: #444;
+    }
+    main h1 {
+      font-size: 2.2rem;
+      margin-bottom: 1.2rem;
+      color: #2c3e50;
+      font-weight: 700;
+    }
+    main h2 {
+      margin-top: 2rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #346be8;
+    }
+    main ul {
+      padding-left: 1.3em;
+      margin: 0.6em 0;
+    }
+    main ul li {
+      margin-bottom: 0.4em;
+    }
+    main p {
+      margin-bottom: 1rem;
+    }
+    main a {
+      color: #0077cc;
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer.footer {
+      background-color: #002244;
+      color: white;
+      padding: 2rem 1rem 1rem 1rem;
+      font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    }
+    .footer-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 1.8rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    .footer-col-logo {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      min-width: 220px;
+      align-items: flex-start;
+    }
+    .footer-logo {
+      font-weight: 700;
+      font-size: 1.45rem;
+      color: #fff;
+      letter-spacing: 0.02rem;
+    }
+    .footer-logo-accent {
+      color: #19d4ca;
+      margin-left: 2px;
+    }
+    .footer-slogan {
+      font-size: 1rem;
+      color: #b4e0ff;
+      opacity: 0.82;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      margin-top: 0.1rem;
+    }
+    .footer-col-links {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      min-width: 200px;
+      align-items: center;
+    }
+    .footer-main-links,
+    .footer-secondary-links {
+      display: flex;
+      gap: 1.4rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .footer-main-links a,
+    .footer-secondary-links a {
+      font-weight: 400;
+      text-decoration: none;
+      color: white;
+      opacity: 0.98;
+      font-size: 0.98rem;
+      transition: color 0.16s;
+    }
+    .footer-secondary-links a {
+      color: #c6e8fa;
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+    .footer-main-links a:hover,
+    .footer-secondary-links a:hover {
+      text-decoration: underline;
+      color: #19d4ca;
+    }
+    .footer-col-icons {
+      flex: 0 0 auto;
+      min-width: 140px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .footer-social-icons-horizontal {
+      display: flex;
+      gap: 0.6rem;
+    }
+    .social-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #16375c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.16s, transform 0.12s;
+      cursor: pointer;
+    }
+    .social-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+    .social-icon.facebook svg { color: #1877F3; }
+    .social-icon.twitter svg { color: #1DA1F2; }
+    .social-icon.whatsapp svg { color: #25D366; }
+    .social-icon.instagram svg { color: #E4405F; }
+    .social-icon:hover {
+      background: #245489;
+      transform: scale(1.08);
+    }
+    .footer-copy {
+      text-align: center;
+      color: #d8ecfa;
+      opacity: 0.8;
+      font-size: 0.92rem;
+      margin-top: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .header {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .header-nav {
+        justify-content: center;
+        width: 100%;
+        margin-top: 0.5rem;
+        gap: 0.7rem;
+      }
+      .keepmyasset-logo-text {
+        font-size: 1.15rem;
+        padding: 6px 12px;
+      }
+      main {
+        margin: 2rem 1rem 1rem 1rem;
+        padding: 1.4rem 1.5rem;
+        font-size: 1rem;
+      }
+      .footer-bar {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      .footer-col-links {
+        align-items: center;
+      }
+      .footer-col-icons {
+        justify-content: center;
+      }
+    }
+    @media (max-width: 480px) {
+      .keepmyasset-logo-icon {
+        width: 38px;
+        height: 38px;
+      }
+      .keepmyasset-logo-text {
+        font-size: 1rem;
+        padding: 5px 10px;
+      }
+      .nav-btn,
+      .signin-btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+      }
+      main {
+        margin: 1rem;
+        padding: 1rem 1rem;
+        font-size: 0.95rem;
+      }
+      .footer-main-links,
+      .footer-secondary-links {
+        gap: 1rem;
+        font-size: 0.88rem;
+      }
+      .footer-col-logo {
+        align-items: center;
+        text-align: center;
+      }
+      .footer-col-links {
+        align-items: center;
+      }
+      .footer-col-icons {
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="privacy-container">
+  <!-- Header -->
+  <header class="header">
+    <a href="/" class="header-logo-link" aria-label="KeepMyAsset Home">
+      <div class="keepmyasset-logo" tabindex="0">
+        <svg
+          width="48"
+          height="48"
+          viewBox="0 0 64 64"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="keepmyasset-logo-icon"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M32 2L12 12v18c0 14 8 22 20 22s20-8 20-22V12L32 2z"
+            fill="#00B761"
+            stroke="#004D40"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M24 30l8 8 12-16"
+            stroke="#004D40"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="none"
+          />
+        </svg>
+        <span class="keepmyasset-logo-text"
+          >KeepMy<span class="keepmyasset-logo-asset">Asset</span></span>
+      </div>
+    </a>
+  </header>
+
+  <!-- Main content - Privacy Policy -->
+  <main aria-label="Privacy Policy">
     <h1>Privacy Policy</h1>
     <p>
-      Your privacy is important to us. This policy explains how we collect, use, and protect your information.
+      At KeepMyAsset, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and disclose your information when you use our service.
     </p>
+
     <h2>Information We Collect</h2>
     <ul>
-      <li>Personal identification information</li>
-      <li>Usage data</li>
-      <li>Cookies and tracking technologies</li>
+      <li><strong>Personal Information:</strong> Name, email address, contact details, and other information you provide when registering or communicating with us.</li>
+      <li><strong>Usage Data:</strong> Information about your interactions with our website and services, including IP address, browser type, and pages visited.</li>
+      <li><strong>Cookies and Tracking Technologies:</strong> We use cookies to enhance your experience and collect anonymous usage data.</li>
     </ul>
-    <h2>How We Use Information</h2>
+
+    <h2>How We Use Your Information</h2>
+    <ul>
+      <li>To provide, maintain, and improve our services.</li>
+      <li>To communicate with you, including responding to inquiries and sending updates.</li>
+      <li>To comply with legal obligations and prevent fraud or abuse.</li>
+    </ul>
+
+    <h2>Information Sharing and Disclosure</h2>
     <p>
-      We use your information to provide and improve our services, communicate with you, and ensure security.
+      We do not sell your personal information. We may share your information with trusted third-party service providers who help us operate our business and deliver our services, subject to confidentiality agreements.
     </p>
-    <h2>Data Security</h2>
+
+    <h2>Security</h2>
     <p>
-      We implement security measures to protect your data from unauthorized access.
+      We implement reasonable security measures to protect your personal information from unauthorized access, disclosure, alteration, or destruction.
     </p>
+
+    <h2>Your Rights</h2>
+    <ul>
+      <li>Access and correct your personal information.</li>
+      <li>Request deletion of your data, subject to legal requirements.</li>
+      <li>Opt-out of marketing communications.</li>
+    </ul>
+
+    <h2>Cookies</h2>
+    <p>
+      You can manage your cookie preferences through your browser settings. Please note that disabling cookies may affect some features of our website.
+    </p>
+
+    <h2>Changes to This Policy</h2>
+    <p>
+      We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.
+    </p>
+
     <h2>Contact Us</h2>
     <p>
-      If you have any questions about this Privacy Policy, please contact us at privacy@keepmyasset.com.
+      If you have questions or concerns about this policy, please contact us at 
+      <a href="mailto:support@keepmyasset.com">support@keepmyasset.com</a>.
     </p>
-  </div>
+
+    <p style="font-size:0.95rem; color:#888; margin-top:2rem;">
+      Last updated: July 27, 2025
+    </p>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo" aria-label="Site Footer">
+    <div class="footer-bar">
+      <div class="footer-col footer-col-logo">
+        <div class="footer-logo">
+          KeepMy<span class="footer-logo-accent">Asset</span>
+        </div>
+        <div class="footer-slogan">Securing Your Digital Legacy</div>
+      </div>
+      <div class="footer-col footer-col-links">
+        <div class="footer-main-links">
+          <a href="/">Home</a>
+          <a href="/features">Features</a>
+          <a href="/faq">FAQ</a>
+          <a href="/contact">Contact</a>
+        </div>
+        <div class="footer-secondary-links">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms &amp; Conditions</a>
+        </div>
+      </div>
+      <div class="footer-col footer-col-icons" aria-label="Social Media Links">
+        <div class="footer-social-icons-horizontal">
+          <a
+            class="social-icon facebook"
+            href="https://facebook.com/"
+            aria-label="Facebook"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg width="18" height="18" viewBox="0 0 320 512" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M279.14 288l14.22-92.66h-88.91V134.09c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.09 44.38-121.09 124.72v70.62H22.89V288h81.38v224h100.2V288z"/>
+            </svg>
+          </a>
+          <a
+            class="social-icon twitter"
+            href="https://twitter.com/"
+            aria-label="Twitter"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg width="18" height="18" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M459.4 151.7c.3 4.1.3 8.2.3 12.4 0 125.7-95.7 270.7-270.7 270.7-54 0-104.3-15.9-146.4-43.2 7.6.9 15.2 1.4 23.1 1.4 44.8 0 86.1-15.2 118.8-41.1-42-1-77.7-28.5-90-66.7 5.9.9 11.6 1.5 17.7 1.5 8.6 0 17.3-1.1 25.3-3.3-44.1-8.9-77.4-47.7-77.4-94.5v-1.2c13.1 7.3 28.1 11.8 44 12.3-26.1-17.4-43-47.1-43-80.9 0-17.7 4.6-34.2 12.7-48.4C81.6 142 176.7 198 274.7 204.4c-1.6-7.1-2.5-14.5-2.5-22 0-53.5 43.1-96.6 96.6-96.6 27.7 0 52.8 11.7 70.4 30.1 21.8-4.2 42.4-12.3 60.7-23.5-7.2 22.6-22.5 41.5-42.4 53.5 19.4-2.3 37.9-7.4 55.1-15-12.8 19-28.5 35.7-46.8 49z"/>
+            </svg>
+          </a>
+          <a
+            class="social-icon whatsapp"
+            href="https://wa.me/"
+            aria-label="WhatsApp"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg width="18" height="18" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M380.9 97.1C339 55.2 283.1 32 224.5 32c-114.7 0-208 93.3-208 208 0 36.7 9.9 72.5 28.7 104.1L1.6 480l138.7-36.1C170.1 460.3 197 464 224 464c114.7 0 208-93.3 208-208 0-58.6-23.2-114.5-65.1-158.9zM224.5 426c-22.4 0-44.6-4.5-65.3-13.2l-4.6-1.9-82.2 21.4 21.9-80.1-2.7-4.8c-17.4-30-26.7-64.5-26.7-100.4 0-99.1 80.8-180 180-180 48.2 0 93.6 18.7 127.8 52.8s52.8 79.6 52.8 127.8c.1 99.1-80.7 180-179.9 180zm101.3-138.3c-5.5-2.7-32.6-16.1-37.7-17.9-5.1-1.9-8.8-2.7-12.5 2.7s-14.3 17.9-17.6 21.5-6.5 4.1-12 1.4c-32.7-16.3-54.3-29.1-76.3-66.2-5.8-9.9 5.8-9.2 16.3-30.7 1.8-3.8.9-7.1-.5-9.8-1.5-2.7-12.5-30.1-17.1-41.2-4.5-10.7-9.1-9.1-12.5-9.3-3.2-.2-7-.3-10.7-.3s-9.8 1.4-15 6.6c-5.2 5.2-19.8 19.4-19.8 47.5s14.2 55.3 16.2 59.2c2 3.9 28 42.7 68 58.4 9.4 3.7 16.7 5.9 22.4 7.6 9.4 2.9 18 2.5 24.7 1.5 7.5-1.4 32.6-13.3 37.2-26.2 4.6-12.9 4.6-23.9 3.2-26.2-1.3-2.2-4.8-3.5-10.3-6.2z"/>
+            </svg>
+          </a>
+          <a
+            class="social-icon instagram"
+            href="https://instagram.com/"
+            aria-label="Instagram"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg width="18" height="18" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M224.1 141c-63.6 0-115 51.4-115 115 0 63.6 51.4 115 115 115 63.6 0 115-51.4 115-115 0-63.6-51.4-115-115-115zm0 190c-41.6 0-75-33.4-75-75 0-41.6 33.4-75 75-75s75 33.4 75 75c0 41.6-33.4 75-75 75zm146.4-194.3c0 14.9-12 26.9-26.9 26.9s-26.9-12-26.9-26.9 12-26.9 26.9-26.9c14.9 0 26.9 12 26.9 26.9zm76.1 27.2c-1.7-35.3-9.9-66.7-36.2-92.7C388.2 9.9 356.8 1.7 321.6 0 285.7-1.7 161.3-1.7 125.4 0c-35.3 1.7-66.7 9.9-92.7 36.2C9.9 59.8 1.7 91.2 0 126.4c-1.7 35.9-1.7 160.3 0 196.2 1.7 35.3 9.9 66.7 36.2 92.7 26 26.4 57.4 34.6 92.7 36.2 35.9 1.7 160.3 1.7 196.2 0 35.3-1.7 66.7-9.9 92.7-36.2 26.4-26 34.6-57.4 36.2-92.7 1.7-35.9 1.7-160.3 0-196.2zm-48.6 278.5c-7.8 19.6-22.9 34.7-42.5 42.5-29.4 11.7-99.2 9-132.4 9s-103 2.6-132.4-9c-19.6-7.8-34.7-22.9-42.5-42.5-11.7-29.4-9-99.2-9-132.4s-2.6-103-9-132.4c7.8-19.6 22.9-34.7 42.5-42.5C59.3 9 129 11.7 162.2 11.7c33.2 0 103-2.6 132.4 9 19.6 7.8 34.7 22.9 42.5 42.5 11.7 29.4 9 99.2 9 132.4s2.6 103 9 132.4z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copy">&copy; 2025 KeepMyAsset. All rights reserved.</div>
+  </footer>
 </body>
 </html>

@@ -51,7 +51,7 @@ const Footer = () => (
             <FaTwitter />
           </a>
           <a
-            href="https://wa.me/919999999999"
+            href="https://wa.me/919759186385"
             target="_blank"
             rel="noopener"
             className="social-icon whatsapp"
@@ -60,7 +60,7 @@ const Footer = () => (
             <FaWhatsapp />
           </a>
           <a
-            href="https://instagram.com/keepmyasset/"
+            href="https://instagram.com/keepmyassets/"
             target="_blank"
             rel="noopener"
             className="social-icon instagram"
