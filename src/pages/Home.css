@@ -1359,31 +1359,50 @@ font-size: 3rem;
   background: var(--white);
   padding: var(--space-3xl);
   width: 90%;
-  max-width: 600px;
+  max-width: 520px;
   border-radius: var(--radius-2xl);
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 999;
+  position: relative;
+  margin-top: calc(var(--space-4xl) + 70px); /* Push modal below header */
+  margin-bottom: var(--space-4xl);
   box-shadow: var(--shadow-2xl);
-  border: none;
-  max-height: 90vh;
+  max-height: 88vh;
   overflow-y: auto;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Align top on desktop */
   justify-content: center;
-  z-index: 998;
+  z-index: 2000; /* Make sure it's above your header */
+  overflow-y: auto;
+}
+
+@media (max-width: 900px) {
+  .modal {
+    padding: var(--space-2xl) var(--space-lg);
+    width: 98%;
+    margin-top: calc(var(--space-3xl) + 60px); /* smaller header on mobile */
+    max-width: 98vw;
+    min-width: 0;
+  }
+}
+@media (max-width: 600px) {
+  .modal {
+    padding: var(--space-lg) var(--space-sm);
+    width: 99vw;
+    min-width: 0;
+    margin-top: calc(var(--space-2xl) + 54px);
+    border-radius: var(--radius-lg);
+    max-width: 99vw;
+  }
 }
 
 .modal h2 {
@@ -1399,12 +1418,19 @@ font-size: 3rem;
   gap: var(--space-sm);
 }
 
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  width: 100%;
+}
+
 .modal-form label {
-  display: block;
-  margin-bottom: var(--space-xl);
+  width: 100%;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--gray-800);
-  font-size: 1.125rem;
+  margin-bottom: 0.25em;
 }
 
 .modal-form input[type='text'],
@@ -1412,14 +1438,14 @@ font-size: 3rem;
 .modal-form input[type='tel'],
 .modal-form input[type='file'] {
   width: 100%;
+  font-size: 1.07em;
   padding: var(--space-lg);
-  margin-top: var(--space-sm);
+  margin-top: var(--space-xs);
   border: 2px solid var(--gray-200);
   border-radius: var(--radius-md);
-  font-size: 1rem;
-  transition: var(--transition);
   background: var(--gray-50);
-  font-family: var(--font-primary);
+  transition: var(--transition);
+  box-sizing: border-box;
 }
 
 .modal-form input:focus {
@@ -1436,12 +1462,9 @@ font-size: 3rem;
 
 .error-message {
   color: var(--accent-red);
-  font-size: 0.875rem;
-  margin-top: var(--space-sm);
+  font-size: 0.88rem;
+  margin-top: var(--space-xs);
   font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
 }
 
 .tooltip-icon {
@@ -1451,6 +1474,9 @@ font-size: 3rem;
   font-size: 1rem;
   transition: var(--transition);
 }
+body.ReactModal__Body--open {
+  overflow: hidden;
+}
 
 .tooltip-icon:hover {
   color: var(--primary-blue);
@@ -1459,10 +1485,17 @@ font-size: 3rem;
 .modal-buttons {
   display: flex;
   gap: var(--space-lg);
-  margin-top: var(--space-2xl);
   justify-content: center;
+  margin-top: var(--space-2xl);
 }
 
+@media (max-width: 600px) {
+  .modal-buttons {
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+  }
+}
 .add-btn,
 .cancel-btn {
   padding: var(--space-lg) var(--space-2xl);
