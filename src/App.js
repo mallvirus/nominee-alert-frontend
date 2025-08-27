@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Modal from 'react-modal';
+import { FaPhoneAlt, FaCheckCircle } from 'react-icons/fa';
 import Header from './components/Header';
 import Home from './pages/Home';
 import NomineeCheckPage from './pages/NomineeCheckPage';
@@ -14,6 +16,27 @@ function App() {
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState('home'); // Existing logic unchanged
   const [loading, setLoading] = useState(true);
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+  const [phoneInput, setPhoneInput] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const [savingPhone, setSavingPhone] = useState(false);
+  const [phoneFocused, setPhoneFocused] = useState(false);
+
+  const extractUserPhone = (u) => {
+    if (!u) return '';
+    const candidates = [
+      u.contact,
+      u.phone,
+      u.phoneNumber,
+      u.mobile,
+      u.mobileNumber
+    ].filter(Boolean).map(String);
+    for (const value of candidates) {
+      const digits = value.replace(/\D/g, '').slice(-10);
+      if (/^\d{10}$/.test(digits)) return digits;
+    }
+    return '';
+  };
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,6 +67,18 @@ function App() {
     }
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const hasPhone = Boolean(extractUserPhone(user));
+    const shownFlag = sessionStorage.getItem('phonePromptShown');
+    if (!hasPhone && !shownFlag) {
+      setPhoneInput('');
+      setPhoneError('');
+      setIsPhoneModalOpen(true);
+      sessionStorage.setItem('phonePromptShown', '1');
+    }
+  }, [user]);
 
   const handleGoogleResponse = async (response) => {
     if (!response.credential) {
@@ -79,6 +114,13 @@ function App() {
         localStorage.setItem('token', data.token);
         setUser(userWithPicture);
         navigateToHome();
+        const hasPhone = Boolean(extractUserPhone(userWithPicture));
+        if (!hasPhone) {
+          setPhoneInput('');
+          setPhoneError('');
+          setIsPhoneModalOpen(true);
+          sessionStorage.setItem('phonePromptShown', '1');
+        }
       } else {
         console.error('Backend user creation failed:', res.status, res.statusText);
       }
@@ -190,6 +232,58 @@ function App() {
     notification.autoRemoveTimer = autoRemoveTimer;
   };
 
+  const validatePhone = (phone) => {
+    if (!phone) return 'Phone number is required.';
+    if (!/^\d{10}$/.test(phone)) return 'Phone number must be exactly 10 digits.';
+    if (phone.startsWith('0') || phone.startsWith('1')) return 'Phone number should not start with 0 or 1.';
+    return '';
+  };
+
+  const handleSavePhone = async () => {
+    const trimmed = String(phoneInput || '').replace(/\D/g, '').slice(0, 10);
+    const validationError = validatePhone(trimmed);
+    setPhoneError(validationError);
+    if (validationError) return;
+
+    try {
+      setSavingPhone(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/user/update`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ userId: user.id, contact: trimmed }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update phone number');
+      }
+
+      const updatedUser = {
+        ...user,
+        contact: trimmed,
+        phone: trimmed,
+        phoneNumber: trimmed,
+        mobile: trimmed,
+        mobileNumber: trimmed,
+      };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setIsPhoneModalOpen(false);
+      showNotification('Phone number updated successfully.', 'success');
+    } catch (err) {
+      setPhoneError('Could not save phone number. Please try again.');
+    } finally {
+      setSavingPhone(false);
+    }
+  };
+
+  const handleClosePhoneModal = () => {
+    setIsPhoneModalOpen(false);
+  };
+
   if (loading) {
     return (
       <div
@@ -249,6 +343,190 @@ function App() {
           )}
         </main>
       )
+
+      <Modal
+        isOpen={isPhoneModalOpen}
+        onRequestClose={handleClosePhoneModal}
+        contentLabel="Update Phone"
+        overlayClassName="modal-overlay"
+        className="modal"
+        style={{
+          overlay: {
+            background: 'radial-gradient(1000px 500px at 20% 10%, rgba(37, 99, 235, 0.15), transparent) , rgba(2, 6, 23, 0.6)',
+            zIndex: 10000,
+            backdropFilter: 'blur(3px)'
+          },
+          content: {
+            inset: 'auto',
+            maxWidth: '480px',
+            margin: '10vh auto',
+            borderRadius: '18px',
+            padding: '0',
+            border: '1px solid rgba(148, 163, 184, 0.35)',
+            boxShadow: '0 30px 80px rgba(2, 6, 23, 0.35)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(248,251,255,0.96) 100%)',
+            overflow: 'hidden'
+          }
+        }}
+      >
+        <div style={{ padding: '1.25rem 1.25rem 1rem 1.25rem' }}>
+          <button
+            aria-label="Close"
+            onClick={handleClosePhoneModal}
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 12,
+              background: 'transparent',
+              border: 'none',
+              color: '#94a3b8',
+              fontSize: 22,
+              cursor: 'pointer'
+            }}
+          >
+            ×
+          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginTop: 8 }}>
+            <div style={{
+              width: 48,
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 14,
+              background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 45%, #c7d2fe 100%)',
+              color: '#1e40af',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)'
+            }}>
+              <FaPhoneAlt />
+            </div>
+            <div>
+              <h2 style={{
+                margin: 0,
+                fontSize: '1.6rem',
+                lineHeight: 1.25,
+                backgroundImage: 'linear-gradient(90deg, #0f172a, #0b3ea8, #2563eb)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent'
+              }}>Add your phone number</h2>
+              <p style={{ color: '#475569', margin: '6px 0 0 0' }}>For faster notifications and payments, add a 10-digit mobile number.</p>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '1.1rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#334155', fontWeight: 600 }}>Mobile Number</label>
+            <div style={{
+              background: phoneError
+                ? 'linear-gradient(135deg, #fecaca, #fca5a5)'
+                : 'linear-gradient(135deg, #dbeafe, #c7d2fe)',
+              padding: 2,
+              borderRadius: 12
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'stretch',
+                borderRadius: 10,
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                boxShadow: phoneFocused ? '0 0 0 6px rgba(37, 99, 235, 0.12)' : 'none',
+                transition: 'box-shadow 150ms ease'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0 0.9rem',
+                  background: '#f8fafc',
+                  color: '#0f172a',
+                  borderTopLeftRadius: 10,
+                  borderBottomLeftRadius: 10,
+                  fontWeight: 700
+                }}>+91</div>
+                <input
+                  type="tel"
+                  value={phoneInput}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setPhoneInput(v);
+                    if (phoneError) setPhoneError(validatePhone(v));
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !savingPhone) {
+                      handleSavePhone();
+                    }
+                  }}
+                  onFocus={() => setPhoneFocused(true)}
+                  onBlur={() => setPhoneFocused(false)}
+                  placeholder="9876543210"
+                  maxLength={10}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 0.9rem',
+                    borderTopRightRadius: 10,
+                    borderBottomRightRadius: 10,
+                    border: 'none',
+                    outline: 'none',
+                    background: 'transparent',
+                    fontSize: '1rem'
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.6rem', gap: '0.4rem' }}>
+              {phoneError ? (
+                <span style={{ color: '#ef4444', fontSize: '0.92rem' }}>{phoneError}</span>
+              ) : (
+                <span style={{ color: '#64748b', fontSize: '0.92rem' }}>Enter a valid 10-digit Indian mobile number.</span>
+              )}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.9rem', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#16a34a' }}>
+              <FaCheckCircle />
+              <div style={{ fontSize: '0.95rem' }}>
+                <div>Used only for verification and alerts</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '0.6rem' }}>
+              <button
+                type="button"
+                onClick={handleClosePhoneModal}
+                style={{
+                  background: '#f8fafc',
+                  color: '#0f172a',
+                  border: '1px solid #e2e8f0',
+                  padding: '0.6rem 1rem',
+                  borderRadius: 12,
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 0 rgba(0,0,0,0.02)'
+                }}
+              >
+                Not now
+              </button>
+              <button
+                type="button"
+                onClick={handleSavePhone}
+                disabled={savingPhone}
+                style={{
+                  background: savingPhone
+                    ? 'linear-gradient(90deg, #60a5fa, #3b82f6)'
+                    : 'linear-gradient(90deg, #4338ca, #2563eb)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.6rem 1rem',
+                  borderRadius: 12,
+                  cursor: savingPhone ? 'default' : 'pointer',
+                  boxShadow: '0 12px 20px rgba(37, 99, 235, 0.25)'
+                }}
+              >
+                {savingPhone ? 'Saving...' : 'Save number'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
 
       <Footer />
     </div>
