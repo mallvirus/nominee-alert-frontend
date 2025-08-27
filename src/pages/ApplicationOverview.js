@@ -21,30 +21,12 @@ const ApplicationOverview = ({ user, onLoginSuccess }) => {
     }
   };
 
-  const handleAddNew = () => {
-    try {
-      sessionStorage.setItem('openAddNominee', '1');
-      if (!user) {
-        if (window.google?.accounts?.id) {
-          window.google.accounts.id.prompt();
-        }
-        // App will navigate home after successful sign-in
-        return;
-      }
-      // Already signed in: navigate to home to open the Add Nominee modal
-      window.location.assign('/');
-    } catch (e) {
-      window.location.assign('/');
-    }
-  };
-
   return (
     <div style={styles.container}>
       {/* Intro / Summary */}
       <header style={styles.header}>
         <div style={styles.headerRow}>
           <h1 style={styles.title}>Application Overview</h1>
-          <button onClick={handleAddNew} style={styles.addNewButton}>Add New</button>
         </div>
         <p style={styles.subtitle}>
           KeepMyAsset is your trusted partner in securing your family’s financial future. Upload your insurance documents, assign nominees, and ensure your loved ones are automatically notified when it matters most — all with complete privacy and security.
@@ -188,16 +170,6 @@ const styles = {
     fontWeight: '700',
     color: '#2563eb',
     marginBottom: 12,
-  },
-  addNewButton: {
-    background: 'linear-gradient(90deg, #4338ca, #2563eb)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 10,
-    padding: '0.6rem 1.1rem',
-    fontWeight: 700,
-    cursor: 'pointer',
-    boxShadow: '0 8px 16px rgba(37,99,235,0.25)',
   },
   subtitle: {
     fontSize: '1.25rem',
