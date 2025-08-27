@@ -219,7 +219,7 @@ function NomineeCheckPage({ user }) {
         key: process.env.REACT_APP_RAZORPAY_KEY,
         amount,
         currency,
-        name: 'Nominee Alert Service',
+        name: 'KeepMyAsset',
         description: 'Nominee Check Payment',
         order_id: razorpayOrderId,
         handler: async function (response) {

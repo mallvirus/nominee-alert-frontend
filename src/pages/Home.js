@@ -233,7 +233,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
   };
 
   const validateFile = (file, isRequired = true) => {
-    if (!file && isRequired) return 'Please select a policy document.';
+    if (!file && isRequired) return 'Please select a document.';
     if (!file) return ''; // Optional file for edit
 
     const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
@@ -256,7 +256,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
   };
 
   const validateProviderName = (name) => {
-    if (!name) return 'Insurance provider name is required.';
+    if (!name) return 'Provider name is required.';
     const trimmedName = name.trim();
     if (trimmedName.length < 2) return 'Provider name must be at least 2 characters.';
     if (trimmedName.length > 50) return 'Provider name must be less than 50 characters.';
@@ -508,7 +508,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
           <div className="steps">
             <div className="step">
               <FaCloudUploadAlt className="step-icon" size={75} />
-              <h3>1. Upload Policy Documents</h3>
+              <h3>1. Upload Documents</h3>
               <p>
                 Securely store and organize your insurance documents in one encrypted place. 
                 We support PDF, JPG, and PNG formats up to 2MB with bank-level security.
@@ -551,7 +551,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
               <h4>Insurance Policies</h4>
               <div className="amount">₹{insuranceAmount.toLocaleString()}+ Cr</div>
               <div className="reason">
-                Nominees remain unaware of policies or lack access to critical policy documents 
+                Nominees remain unaware of policies or lack access to critical documents 
                 and claim procedures.
               </div>
             </div>
@@ -770,7 +770,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
                       rel="noopener noreferrer"
                     >
                       <FaDownload />
-                      View Policy Document
+                      View Document
                     </a>
                   </div>
                 </div>
@@ -879,7 +879,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
             </label>
 
             <label>
-              Insurance Provider Name *
+               Provider Name *
               <FaInfoCircle
                 className="tooltip-icon"
                 data-tooltip-id="tooltip-provider"
@@ -904,7 +904,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
             </label>
 
             <label>
-              Policy Document *
+              Document *
               <FaInfoCircle
                 className="tooltip-icon"
                 data-tooltip-id="tooltip-doc"
@@ -919,7 +919,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
                   disabled={submitLoading}
                 />
                 <FaCloudUploadAlt className="upload-icon" />
-                {formData.policyDocument ? formData.policyDocument.name : 'Choose Policy Document'}
+                {formData.policyDocument ? formData.policyDocument.name : 'Choose Document'}
               </label>
               {formData.policyDocument && (
                 <div style={{
@@ -1045,7 +1045,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
             </label>
 
             <label>
-              Insurance Provider Name *
+              Provider Name *
               <FaInfoCircle
                 className="tooltip-icon"
                 data-tooltip-id="tooltip-edit-provider"
@@ -1070,7 +1070,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
             </label>
 
             <label>
-              Policy Document (Optional - leave empty to keep current document)
+              Document (Optional - leave empty to keep current document)
               <FaInfoCircle
                 className="tooltip-icon"
                 data-tooltip-id="tooltip-edit-doc"
@@ -1084,7 +1084,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
                   disabled={editLoading}
                 />
                 <FaCloudUploadAlt className="upload-icon" />
-                {editFormData.policyDocument ? editFormData.policyDocument.name : 'Choose New Policy Document (Optional)'}
+                {editFormData.policyDocument ? editFormData.policyDocument.name : 'Choose New Document (Optional)'}
               </label>
               {editFormData.policyDocument && (
                 <div style={{
