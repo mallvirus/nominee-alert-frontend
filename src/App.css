@@ -3,6 +3,8 @@
 /* --- GLOBAL RESET --- */
 html {
   box-sizing: border-box;
+  /* Fluid root font-size for smooth scaling across devices */
+  font-size: clamp(14px, 1.2vw + 10px, 16px);
 }
 *, *::before, *::after {
   box-sizing: inherit;
@@ -14,6 +16,10 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background: #f9fbfc;
   color: #333;
+  /* Respect safe areas on modern mobile devices */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .app-wrapper {
@@ -69,4 +75,34 @@ body {
 
 .highlight {
   color: #0077cc;
+}
+
+/* --- Global responsive container --- */
+.App main {
+  max-width: none; /* allow full-width layouts */
+  width: 100%;
+  margin: 0;
+  padding-left: clamp(12px, 2vw, 24px);
+  padding-right: clamp(12px, 2vw, 24px);
+}
+
+/* Make media and images responsive by default */
+img, svg, video, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Improve default focus visibility */
+:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Better spacing rhythm on small screens */
+@media (max-width: 768px) {
+  .App main {
+    max-width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }

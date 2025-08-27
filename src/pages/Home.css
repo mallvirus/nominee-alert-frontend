@@ -2589,3 +2589,53 @@ body.ReactModal__Body--open {
     font-size: 0.95rem;
   }
 }
+
+/* --- Responsive overrides for fluid type and spacing (non-breaking) --- */
+.home-layout {
+  padding-left: clamp(12px, 2vw, 24px);
+  padding-right: clamp(12px, 2vw, 24px);
+}
+
+.hero {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: clamp(420px, 60vh, 700px);
+  gap: clamp(1rem, 3vw, 3rem);
+  padding: clamp(1.5rem, 4vw, 5rem) clamp(1rem, 3vw, 3rem);
+}
+
+.hero-text h1 {
+  font-size: clamp(1.75rem, 3.2vw + 1rem, 3.5rem);
+}
+
+.hero-text .tagline {
+  font-size: clamp(1rem, 1.2vw + 0.8rem, 1.5rem);
+}
+
+.section-title {
+  font-size: clamp(1.5rem, 2.2vw + 0.8rem, 3rem);
+}
+
+.features,
+.data-section,
+.how-it-works,
+.testimonial,
+.cta {
+  padding: clamp(1.25rem, 3.5vw, 3rem) clamp(1rem, 3vw, 3rem);
+}
+
+.data-content,
+.features-grid,
+.steps {
+  gap: clamp(1rem, 2.5vw, 2rem);
+}
+
+.nominee-cards-container {
+  gap: clamp(0.75rem, 2.5vw, 2rem);
+  padding: clamp(1rem, 3vw, 2.5rem) clamp(0.5rem, 2vw, 1rem);
+}
+
+@media (max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
