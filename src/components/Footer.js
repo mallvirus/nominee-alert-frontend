@@ -23,12 +23,12 @@ const Footer = () => (
             <Link to="/about">About</Link>
             <Link to="/features">Features</Link>
             <Link to="/faq">FAQ</Link>
-            <Link to="/contact">Contact</Link>
+            <a href="https://wa.me/918177009416" target="_blank" rel="noopener">Contact</a>
           </div>
           {/* Second row: Legal links */}
           <div className="footer-legal-row">
-            <a href="/Privacy.html">Privacy Policy</a>
-<a href="/Terms.html">Terms & Conditions</a>
+            <a href="/Privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+            <a href="/Terms.html" target="_blank" rel="noopener">Terms & Conditions</a>
           </div>
         </div>
         <div className="footer-social-icons">
