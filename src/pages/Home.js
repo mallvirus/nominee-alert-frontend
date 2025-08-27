@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 import './Home.css';
 import Modal from 'react-modal';
@@ -45,6 +45,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
+  const [isSigninModalOpen, setSigninModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     nomineeEmail: '',
     nomineePhone: '',
@@ -128,6 +129,34 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
   useEffect(() => {
     fetchNominees();
   }, [fetchNominees]);
+
+  // If redirected from Application Overview after login, open the Add Nominee modal
+  useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('openAddNominee');
+    if (user && shouldOpen === '1') {
+      sessionStorage.removeItem('openAddNominee');
+      setModalOpen(true);
+    }
+  }, [user]);
+
+  // Inline Google button rendering in Sign-in modal
+  const googleBtnContainerRef = useRef(null);
+  const googleBtnRenderedRef = useRef(false);
+  useEffect(() => {
+    if (!isSigninModalOpen) return;
+    try {
+      if (window.google?.accounts?.id && googleBtnContainerRef.current && !googleBtnRenderedRef.current) {
+        window.google.accounts.id.renderButton(googleBtnContainerRef.current, {
+          theme: 'filled_blue',
+          size: 'large',
+          shape: 'pill',
+          width: 280,
+          text: 'signin_with'
+        });
+        googleBtnRenderedRef.current = true;
+      }
+    } catch {}
+  }, [isSigninModalOpen]);
 
   const handleRemove = async (nomineeId, policyId) => {
     const confirmMessage = `Are you sure you want to remove this nominee?\n\nThis action cannot be undone and the nominee will no longer have access to this policy information.`;
@@ -465,6 +494,37 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
     }
   };
 
+  const handleAddNewClick = () => {
+    try {
+      sessionStorage.setItem('openAddNominee', '1');
+      if (!user) {
+        const focusHeaderGoogleButton = () => {
+          try {
+            const el = document.getElementById('google-sign-in-button-container');
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              const prevOutline = el.style.outline;
+              const prevRadius = el.style.borderRadius;
+              el.style.outline = '3px solid #2563eb';
+              el.style.borderRadius = '12px';
+              setTimeout(() => {
+                el.style.outline = prevOutline;
+                el.style.borderRadius = prevRadius;
+              }, 3000);
+            }
+          } catch {}
+        };
+        // Do NOT call prompt to avoid FedCM suppression. Show inline sign-in modal and focus header button.
+        setSigninModalOpen(true);
+        focusHeaderGoogleButton();
+        return;
+      }
+      setModalOpen(true);
+    } catch (e) {
+      if (!user && onGoogleSignIn) onGoogleSignIn();
+    }
+  };
+
   // Animated counters for statistics
   const bankAmount = useAnimatedCounter(35000);
   const insuranceAmount = useAnimatedCounter(27000);
@@ -489,18 +549,49 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
               when it matters most. Don't let silence steal what your family deserves.
             </p>
             <div className="nominee-buttons">
-            <button 
-  className="nominee-btn view"
-  onClick={()=>{
-    console.log('Application Overview button clicked');
-    onNavigateApplicationOverview()}} // call the prop function
->
-  <FaEye />
-  Application Overview
-</button>
+              <button 
+                className="nominee-btn view"
+                onClick={() => {
+                  console.log('Application Overview button clicked');
+                  onNavigateApplicationOverview();
+                }}
+              >
+                <FaEye />
+                Application Overview
+              </button>
+              <button
+                className="nominee-btn add"
+                onClick={handleAddNewClick}
+                aria-label="Add New Nominee"
+              >
+                <FaPlus />
+                Add New Nominee
+              </button>
             </div>
           </div>
         </section>
+
+        {/* Sign-in Required Modal */}
+        <Modal
+          isOpen={isSigninModalOpen}
+          onRequestClose={() => setSigninModalOpen(false)}
+          contentLabel="Sign in to continue"
+          className="modal"
+          overlayClassName="modal-overlay"
+        >
+          <h2>Sign in to continue</h2>
+          <p style={{ color: '#475569', marginTop: '-8px', marginBottom: '12px' }}>
+            Please sign in to add a nominee.
+          </p>
+          <div ref={googleBtnContainerRef} style={{ display: 'flex', justifyContent: 'center', margin: '10px 0 14px' }} />
+          <div style={{ textAlign: 'center', color: '#64748b', fontSize: '0.95rem' }}>
+            If you don’t see the button, enable third‑party sign-in in site settings,
+            or use the Google button in the header.
+          </div>
+          <div className="modal-buttons" style={{ marginTop: '18px' }}>
+            <button type="button" className="cancel-btn" onClick={() => setSigninModalOpen(false)}>Cancel</button>
+          </div>
+        </Modal>
 
         {/* How It Works Section */}
         <section className="how-it-works">
