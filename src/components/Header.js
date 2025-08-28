@@ -20,31 +20,65 @@ const Header = ({
   // However, it's still useful to make sure the div is in the DOM when we initialize.
   const isGoogleInitialized = useRef(false); // To prevent multiple initializations
   useEffect(() => {
-    // This effect runs once when the component mounts
-    // to initialize the Google button if conditions are met.
-    if (window.google && googleClientId && !isGoogleInitialized.current) {
-      window.google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: onGoogleResponse,
-      });
-
-      // Render the button into the specific div by its ID
-      // This div will be always present in the Header's JSX.
-      const googleButtonElement = document.getElementById(GOOGLE_BUTTON_ID);
-      if (googleButtonElement) {
-        window.google.accounts.id.renderButton(googleButtonElement, {
-          theme: 'filled_blue',
-          size: 'large',
-          width: 100, // Make sure width is sufficient
-          text: 'signin',
-          shape: 'pill',
+    // Initialize Google One Tap / button when script is ready.
+    const initializeGoogleButton = () => {
+      if (!window.google || !googleClientId || isGoogleInitialized.current) return false;
+      try {
+        window.google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: onGoogleResponse,
         });
-        isGoogleInitialized.current = true; // Mark as initialized
-      } else {
-        console.error(`Element with ID ${GOOGLE_BUTTON_ID} not found.`);
+        const googleButtonElement = document.getElementById(GOOGLE_BUTTON_ID);
+        if (googleButtonElement) {
+          window.google.accounts.id.renderButton(googleButtonElement, {
+            theme: 'filled_blue',
+            size: 'large',
+            width: 100,
+            text: 'signin',
+            shape: 'pill',
+          });
+          isGoogleInitialized.current = true;
+          return true;
+        } else {
+          console.error(`Element with ID ${GOOGLE_BUTTON_ID} not found.`);
+        }
+      } catch (err) {
+        console.error('Failed to initialize Google Sign-In:', err);
       }
+      return false;
+    };
+
+    // Try immediately in case the script is already available.
+    if (initializeGoogleButton()) return;
+
+    // Attach a load listener to the Google script tag as a primary signal.
+    const script = document.querySelector('script[src^="https://accounts.google.com/gsi/client"]');
+    const onScriptLoad = () => {
+      initializeGoogleButton();
+    };
+    if (script) {
+      script.addEventListener('load', onScriptLoad);
     }
-  }, [googleClientId, onGoogleResponse]); // Dependencies for initial setup
+
+    // Poll as a safety net for environments where the load event was missed.
+    const startTime = Date.now();
+    const pollIntervalId = window.setInterval(() => {
+      if (isGoogleInitialized.current) {
+        window.clearInterval(pollIntervalId);
+        return;
+      }
+      if (Date.now() - startTime > 7000) {
+        window.clearInterval(pollIntervalId);
+        return;
+      }
+      initializeGoogleButton();
+    }, 200);
+
+    return () => {
+      if (script) script.removeEventListener('load', onScriptLoad);
+      window.clearInterval(pollIntervalId);
+    };
+  }, [googleClientId, onGoogleResponse]); // Dependencies for setup/retry
 
   useEffect(() => {
     // This effect runs whenever the `user` state changes.

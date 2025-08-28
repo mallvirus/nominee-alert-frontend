@@ -1,0 +1,124 @@
+.sign-in-button {
+  --btn-bg-start: #1f2937;
+  --btn-bg-end: #0b3ea8;
+  --btn-hover-start: #1e40af;
+  --btn-hover-end: #2563eb;
+  --btn-active: #1d4ed8;
+  --btn-text: #ffffff;
+  --btn-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+  --btn-ring: 0 0 0 4px rgba(37, 99, 235, 0.25);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.72rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(90deg, var(--btn-bg-start), var(--btn-bg-end));
+  color: var(--btn-text);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: var(--btn-shadow);
+  transition: transform 150ms ease, box-shadow 150ms ease, background 250ms ease, border-color 150ms ease;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sign-in-button:hover {
+  background: linear-gradient(90deg, var(--btn-hover-start), var(--btn-hover-end));
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.35);
+}
+
+.sign-in-button:active {
+  background: var(--btn-active);
+  transform: translateY(0);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+}
+
+.sign-in-button:focus-visible {
+  outline: none;
+  box-shadow: var(--btn-ring);
+}
+
+.sign-in-button__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sign-in-button__icon {
+  width: 18px;
+  height: 18px;
+  color: #c7d2fe;
+}
+
+.sign-in-button__label {
+  font-size: 0.98rem;
+  line-height: 1;
+}
+
+.sign-in-button__glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  background: radial-gradient(120px 60px at calc(100% - 20px) 12px, rgba(59, 130, 246, 0.25), transparent 60%),
+              radial-gradient(160px 80px at 20px calc(100% - 6px), rgba(99, 102, 241, 0.2), transparent 65%);
+  filter: blur(10px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Size variants for responsiveness */
+@media (max-width: 1024px) {
+  .sign-in-button {
+    padding: 0.68rem 1rem;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sign-in-button {
+    padding: 0.64rem 0.95rem;
+    border-radius: 12px;
+  }
+  .sign-in-button__label {
+    font-size: 0.94rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sign-in-button {
+    padding: 0.58rem 0.85rem;
+    border-radius: 10px;
+  }
+  .sign-in-button__label {
+    font-size: 0.9rem;
+  }
+  .sign-in-button__icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* High contrast and reduced motion support */
+@media (prefers-contrast: high) {
+  .sign-in-button {
+    border-color: currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sign-in-button {
+    transition: none;
+  }
+}
+
+
+
+
+
