@@ -23,9 +23,12 @@ import {
   FaTimes
 } from 'react-icons/fa';
 import axios from 'axios';
+import Modal from 'react-modal';
 import { loadRazorpayScript } from '../utils/loadRazorpay';
 import './NomineeCheckPage.css';
 import { Helmet } from 'react-helmet';
+
+Modal.setAppElement('#root');
 
 function NomineeCheckPage({ user }) {
   const [email, setEmail] = useState("");
@@ -43,8 +46,13 @@ function NomineeCheckPage({ user }) {
   });
   const fileInputRef = useRef();
   const toastRef = useRef();
+  const [isSecureMode, setIsSecureMode] = useState(false);
+  const [secureFetchLoading, setSecureFetchLoading] = useState(false);
+  const [showSecureConfirm, setShowSecureConfirm] = useState(false);
 
-  const amountInPaise = 200000; // ₹2000
+  const baseAmountInPaise = 200000; // ₹2000
+  const secureAmountInPaise = 2000000; // ₹20000
+  const effectiveAmountInPaise = isSecureMode ? secureAmountInPaise : baseAmountInPaise;
 
   // Focus toast on message change for accessibility
   useEffect(() => {
@@ -119,6 +127,36 @@ function NomineeCheckPage({ user }) {
     }
   };
 
+  // Lookup secure mode for the policyholder being validated using email/phone
+  const checkSecureModeForIdentifier = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      setSecureFetchLoading(true);
+      const params = new URLSearchParams();
+      if (email) params.append('email', email);
+      if (phone) params.append('phoneNumber', phone);
+      const url = `${process.env.REACT_APP_HOST_SERVER}/api/user/secure-mode/lookup${params.toString() ? `?${params.toString()}` : ''}`;
+      const resp = await fetch(url, {
+        method: 'GET',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+      });
+      if (!resp.ok) throw new Error('Lookup failed');
+      const json = await resp.json();
+      const raw =
+        (json && (json.isSecure ?? json.secure)) ??
+        (json?.data && (json.data.isSecure ?? json.data.secure));
+      const value = raw === true || raw === false ? raw : String(raw).toLowerCase() === 'true';
+      setIsSecureMode(Boolean(value));
+      if (Boolean(value)) setShowSecureConfirm(true);
+    } catch (e) {
+      console.error('Secure-mode lookup error:', e);
+    } finally {
+      setSecureFetchLoading(false);
+    }
+  };
+
   // Form submit handler for validation API
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -165,6 +203,8 @@ function NomineeCheckPage({ user }) {
       if (data.successful === true && data.message === "User/Nominee Found") {
         setToast({ type: "success", message: "User/Nominee Found. Proceeding..." });
         setStep(2);
+        // Immediately check secure-mode for this identifier
+        checkSecureModeForIdentifier();
       } else {
         setToast({ type: "error", message: data.message || "Validation failed. Please check your details." });
       }
@@ -176,7 +216,7 @@ function NomineeCheckPage({ user }) {
   };
 
   // Razorpay payment handler
-  const handlePayment = async () => {
+  const handlePayment = async (amountPaise) => {
     const token = localStorage.getItem('token');
     setPaymentLoading(true);
     setToast({ type: '', message: '' });
@@ -198,7 +238,7 @@ function NomineeCheckPage({ user }) {
           userId: user.id,
           serviceType: 'nominee_check',
           pickupDate: new Date().toISOString(),
-          amount: amountInPaise,
+          amount: amountPaise,
         }),
       });
 
@@ -302,6 +342,14 @@ function NomineeCheckPage({ user }) {
       setToast({ type: 'error', message: 'Payment failed: ' + error.message });
       setPaymentLoading(false);
     }
+  };
+
+  const handlePayClick = () => {
+    if (isSecureMode) {
+      setShowSecureConfirm(true);
+      return;
+    }
+    handlePayment(effectiveAmountInPaise);
   };
 
   const handleReset = () => {
@@ -546,7 +594,7 @@ function NomineeCheckPage({ user }) {
 
               <div className="payment-amount">
                 <FaRupeeSign />
-                Payment Amount: ₹2,000
+                Payment Amount: ₹{isSecureMode ? '20,000' : '2,000'}
               </div>
 
               <div className="payment-features">
@@ -568,7 +616,7 @@ function NomineeCheckPage({ user }) {
               </div>
 
               <button
-                onClick={handlePayment}
+                onClick={handlePayClick}
                 disabled={paymentLoading}
                 className="submit-btn"
                 style={{
@@ -584,7 +632,7 @@ function NomineeCheckPage({ user }) {
                 ) : (
                   <>
                     <FaCreditCard />
-                    Pay ₹2,000 Securely
+                    Pay ₹{isSecureMode ? '20,000' : '2,000'} Securely
                     <FaArrowRight />
                   </>
                 )}
@@ -636,6 +684,44 @@ function NomineeCheckPage({ user }) {
           )}
         </div>
       </section>
+
+      {/* Secure Mode Confirmation Modal - must be outside step blocks so it's always mounted */}
+      <Modal
+        isOpen={showSecureConfirm}
+        onRequestClose={() => setShowSecureConfirm(false)}
+        contentLabel="Secure Mode Confirmation"
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <FaLock style={{ color: '#16a34a' }} /> Secure Mode Is Enabled
+        </h2>
+        <div style={{ color: '#334155', lineHeight: 1.6 }}>
+          <p>
+            Because Secure Mode is ON for this account, we will perform additional manual verification
+            before notifying nominees. This ensures extra protection against misuse and false notifications.
+          </p>
+          <p style={{ marginTop: '0.5rem' }}>
+            Due to the manual review effort, the verification fee is <strong>₹20,000</strong> instead of ₹2,000.
+          </p>
+        </div>
+        <div className="modal-buttons" style={{ marginTop: '1rem' }}>
+          <button
+            type="button"
+            className="cancel-btn"
+            onClick={() => { setShowSecureConfirm(false); handleReset(); }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="add-btn"
+            onClick={() => { setShowSecureConfirm(false); handlePayment(secureAmountInPaise); }}
+          >
+            Continue & Pay ₹20,000
+          </button>
+        </div>
+      </Modal>
     </div>
     </>
   );
