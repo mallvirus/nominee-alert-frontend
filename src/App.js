@@ -21,6 +21,7 @@ function App() {
   const [phoneError, setPhoneError] = useState('');
   const [savingPhone, setSavingPhone] = useState(false);
   const [phoneFocused, setPhoneFocused] = useState(false);
+  const [dashboardRefreshKey, setDashboardRefreshKey] = useState(0);
 
   const extractUserPhone = (u) => {
     if (!u) return '';
@@ -45,6 +46,7 @@ function App() {
   const navigateToHome = () => {
     setCurrentPage('home');
     if (location.pathname !== "/") navigate("/");
+    setDashboardRefreshKey((k) => k + 1);
   };
   const navigateToNomineeCheck = () => {
     setCurrentPage('nominee-check');
@@ -335,6 +337,7 @@ function App() {
               user={user}
               onGoogleSignIn={handleGoogleSignIn}
               onNavigateApplicationOverview={navigateToApplicationOverview}
+              dashboardRefreshKey={dashboardRefreshKey}
             />
           )}
           {currentPage === 'nominee-check' && <NomineeCheckPage user={user} />}

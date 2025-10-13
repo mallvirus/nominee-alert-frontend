@@ -5,6 +5,13 @@ import Modal from 'react-modal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import KeepMyAssetLogo from '../Image/Logo.png'
 import { Helmet } from 'react-helmet';
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Tooltip from "@mui/material/Tooltip";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
 import {
   FaTrash,
   FaPlus,
@@ -38,7 +45,7 @@ import {
 
 Modal.setAppElement('#root');
 
-const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
+const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardRefreshKey }) => {
   const [nominees, setNominees] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -52,6 +59,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
     policyDocument: null,
     providerName: ''
   });
+  const [secureEnabled, setSecureEnabled] = useState(false);
   const [editFormData, setEditFormData] = useState({
     nomineeId: null,
     policyId: null,
@@ -303,6 +311,50 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
+
+  const [secureUpdating, setSecureUpdating] = useState(false);
+  const handleSecureToggle = async (event) => {
+    const newValue = event.target.checked;
+    const prev = secureEnabled;
+    setSecureEnabled(newValue);
+    const token = localStorage.getItem('token');
+    try {
+      setSecureUpdating(true);
+      await axios.put(
+        `${process.env.REACT_APP_HOST_SERVER}/api/user/secure-mode`,
+        { isSecure: newValue, userId: user?.id },
+        { headers: { 'Authorization': `Bearer ${token}` }, timeout: 15000 }
+      );
+    } catch (err) {
+      console.error("Error updating secure flag:", err);
+      setSecureEnabled(prev);
+    } finally {
+      setSecureUpdating(false);
+    }
+  };
+
+  // Fetch secure mode state on login and dashboard navigation
+  useEffect(() => {
+    const fetchSecure = async () => {
+      if (!user?.id) return;
+      const token = localStorage.getItem('token');
+      try {
+        const resp = await axios.get(
+          `${process.env.REACT_APP_HOST_SERVER}/api/user/secure-mode?userId=${user.id}`,
+          { headers: { 'Authorization': `Bearer ${token}` }, timeout: 15000 }
+        );
+        // Accept boolean from multiple possible shapes and string booleans
+        const raw =
+          (resp.data && (resp.data.isSecure ?? resp.data.secure)) ??
+          (resp.data?.data && (resp.data.data.isSecure ?? resp.data.data.secure));
+        const value = raw === true || raw === false ? raw : String(raw).toLowerCase() === 'true';
+        setSecureEnabled(Boolean(value));
+      } catch (e) {
+        console.error('Failed to fetch secure mode:', e);
+      }
+    };
+    fetchSecure();
+  }, [user, dashboardRefreshKey]);
 
   const handleEditInputChange = (field, value) => {
     setEditFormData(prev => ({ ...prev, [field]: value }));
@@ -771,6 +823,83 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview}) => {
             <FaUsers style={{color: '#2563eb'}} />
             Your Protected Nominees
           </h3>
+       {/* Secure Mode Toggle Section */}
+<Box
+  sx={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    background: secureEnabled
+      ? "linear-gradient(135deg, #ecfdf5 0%, #dcfce7 100%)"
+      : "#f9fafb",
+    border: secureEnabled ? "1px solid #86efac" : "1px solid #e5e7eb",
+    padding: "14px 20px",
+    borderRadius: "14px",
+    boxShadow: secureEnabled
+      ? "0 6px 16px rgba(16,185,129,0.18)"
+      : "0 3px 10px rgba(0,0,0,0.08)",
+    margin: "14px 0 18px",
+    transition: "all 220ms ease",
+    position: "relative",
+    overflow: "hidden",
+    "&:hover": {
+      transform: "translateY(-1px)",
+      boxShadow: secureEnabled
+        ? "0 10px 20px rgba(16,185,129,0.22)"
+        : "0 8px 20px rgba(0,0,0,0.12)",
+    },
+  }}
+>
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+    <FaLock style={{ color: secureEnabled ? '#16a34a' : '#64748b', fontSize: 20 }} />
+    <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: 0.2 }}>
+      Secure Mode
+    </Typography>
+    <Tooltip
+      title="When Secure Mode is ON, if any user or nominee is checked, we require manual verification before proceeding. A notification is not sent to the nominee immediately — it is sent only after the manual verification is completed."
+      arrow
+      placement="right"
+    >
+      <InfoOutlinedIcon sx={{ color: "#6b7280", fontSize: 20, cursor: "pointer" }} />
+    </Tooltip>
+  </Box>
+
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+    <Chip
+      label={secureEnabled ? "Enabled" : "Disabled"}
+      size="small"
+      color={secureEnabled ? "success" : "default"}
+      variant={secureEnabled ? "filled" : "outlined"}
+      sx={{
+        fontWeight: 600,
+        letterSpacing: 0.2,
+        bgcolor: secureEnabled ? "#16a34a" : undefined,
+        color: secureEnabled ? "#ffffff" : "#374151",
+        borderColor: secureEnabled ? "#16a34a" : "#d1d5db",
+      }}
+    />
+    <Switch
+      checked={secureEnabled}
+      onChange={handleSecureToggle}
+      color="success"
+      disabled={secureUpdating}
+      inputProps={{ "aria-label": "Toggle secure mode" }}
+      sx={{
+        "& .MuiSwitch-switchBase": { padding: 0.75 },
+        "& .MuiSwitch-thumb": { width: 20, height: 20 },
+        "& .MuiSwitch-track": { borderRadius: 18 },
+        "& .MuiSwitch-switchBase.Mui-checked": {
+          color: "#16a34a",
+        },
+        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+          background: "linear-gradient(90deg,#16a34a,#22c55e)",
+          opacity: 1,
+        },
+      }}
+    />
+  </Box>
+</Box>
+
           <button 
             className="add-icon-btn" 
             onClick={() => setModalOpen(true)}
