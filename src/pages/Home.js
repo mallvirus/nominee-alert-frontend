@@ -11,7 +11,6 @@ import Tooltip from "@mui/material/Tooltip";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
 import {
   FaTrash,
   FaPlus,
@@ -859,25 +858,14 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
       title="When Secure Mode is ON, if any user or nominee is checked, we require manual verification before proceeding. A notification is not sent to the nominee immediately — it is sent only after the manual verification is completed."
       arrow
       placement="right"
+      enterTouchDelay={0}
+      leaveTouchDelay={3000}
     >
       <InfoOutlinedIcon sx={{ color: "#6b7280", fontSize: 20, cursor: "pointer" }} />
     </Tooltip>
   </Box>
 
   <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-    <Chip
-      label={secureEnabled ? "Enabled" : "Disabled"}
-      size="small"
-      color={secureEnabled ? "success" : "default"}
-      variant={secureEnabled ? "filled" : "outlined"}
-      sx={{
-        fontWeight: 600,
-        letterSpacing: 0.2,
-        bgcolor: secureEnabled ? "#16a34a" : undefined,
-        color: secureEnabled ? "#ffffff" : "#374151",
-        borderColor: secureEnabled ? "#16a34a" : "#d1d5db",
-      }}
-    />
     <Switch
       checked={secureEnabled}
       onChange={handleSecureToggle}
@@ -909,7 +897,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
           >
             <FaPlus className="add-icon" />
           </button>
-          <ReactTooltip id="tooltip-add" />
+          <ReactTooltip id="tooltip-add" openOnClick delayShow={0} />
         </div>
 
         {loading ? (
@@ -1195,10 +1183,10 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
             </div>
           </form>
 
-          <ReactTooltip id="tooltip-email" />
-          <ReactTooltip id="tooltip-phone" />
-          <ReactTooltip id="tooltip-doc" />
-          <ReactTooltip id="tooltip-provider" />
+          <ReactTooltip id="tooltip-email" openOnClick delayShow={0} />
+          <ReactTooltip id="tooltip-phone" openOnClick delayShow={0} />
+          <ReactTooltip id="tooltip-doc" openOnClick delayShow={0} />
+          <ReactTooltip id="tooltip-provider" openOnClick delayShow={0} />
         </Modal>
 
         {/* Edit Nominee Modal */}
@@ -1360,10 +1348,10 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
             </div>
           </form>
 
-          <ReactTooltip id="tooltip-edit-email" />
-          <ReactTooltip id="tooltip-edit-phone" />
-          <ReactTooltip id="tooltip-edit-doc" />
-          <ReactTooltip id="tooltip-edit-provider" />
+          <ReactTooltip id="tooltip-edit-email" openOnClick delayShow={0} />
+          <ReactTooltip id="tooltip-edit-phone" openOnClick delayShow={0} />
+          <ReactTooltip id="tooltip-edit-doc" openOnClick delayShow={0} />
+          <ReactTooltip id="tooltip-edit-provider" openOnClick delayShow={0} />
         </Modal>
       </section>
     </div>

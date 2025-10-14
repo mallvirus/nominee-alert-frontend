@@ -51,7 +51,7 @@ const Footer = () => (
             <FaTwitter />
           </a>
           <a
-            href="https://wa.me/919759186385"
+            href="https://wa.me/916387509734"
             target="_blank"
             rel="noopener"
             className="social-icon whatsapp"
