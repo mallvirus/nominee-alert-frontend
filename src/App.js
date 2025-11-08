@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { FaPhoneAlt, FaCheckCircle } from 'react-icons/fa';
+import { FaPhoneAlt, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 import Header from './components/Header';
 import Home from './pages/Home';
 import NomineeCheckPage from './pages/NomineeCheckPage';
@@ -532,6 +532,34 @@ function App() {
       </Modal>
 
       <Footer />
+      {/* Floating WhatsApp Button */}
+      <a
+        href="https://wa.me/916387509734"
+        target="_blank"
+        rel="noopener"
+        aria-label="Chat with us on WhatsApp"
+        style={{
+          position: 'fixed',
+          right: 20,
+          bottom: 20,
+          width: 56,
+          height: 56,
+          borderRadius: '50%',
+          background: '#25D366',
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 12px 24px rgba(0,0,0,0.2)',
+          zIndex: 10000,
+          textDecoration: 'none',
+          transition: 'transform 150ms ease',
+        }}
+        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
+        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+      >
+        <FaWhatsapp style={{ fontSize: 28 }} />
+      </a>
     </div>
   );
 }
