@@ -33,15 +33,6 @@ const Footer = () => (
         </div>
         <div className="footer-social-icons">
           <a
-            href="https://www.facebook.com/keepmyasset/"
-            target="_blank"
-            rel="noopener"
-            className="social-icon facebook"
-            aria-label="Facebook"
-          >
-            <FaFacebookF />
-          </a>
-          <a
             href="https://twitter.com/keepmyasset/"
             target="_blank"
             rel="noopener"
