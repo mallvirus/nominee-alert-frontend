@@ -27,6 +27,7 @@ import Modal from 'react-modal';
 import { loadRazorpayScript } from '../utils/loadRazorpay';
 import './NomineeCheckPage.css';
 import { Helmet } from 'react-helmet';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 Modal.setAppElement('#root');
 
@@ -409,7 +410,7 @@ function NomineeCheckPage({ user }) {
               <div className="hero-feature">
                 <FaBell className="hero-feature-icon" />
                 <h4>Multi-Channel Alerts</h4>
-                <p>Nominees receive notifications via SMS, Email, and registered mail</p>
+                <p>Nominees receive notifications via Email, and registered mail</p>
               </div>
             </div>
           </div>
@@ -452,8 +453,11 @@ function NomineeCheckPage({ user }) {
                 <div className="form-section">
                   <h3>
                     <FaUsers style={{ color: '#3b82f6' }} />
-                    Policyholder Information
+                    Account Holder Details
                   </h3>
+                  <p style={{ color: '#64748b', marginTop: '-6px', marginBottom: '12px' }}>
+                    Enter the account holder&apos;s registered email address to locate their policy records/Account details etc. for verification.
+                  </p>
 
                   <div className="input-row-horizontal">
                     <div className="input-group">
@@ -472,11 +476,11 @@ function NomineeCheckPage({ user }) {
                       {errors.email && <div className="error-message"><FaExclamationTriangle />{errors.email}</div>}
                     </div>
 
-                    <div className="or-separator">
+                    {/* <div className="or-separator">
                       <span>OR</span>
-                    </div>
+                    </div> */}
 
-                    <div className="input-group">
+                    {/* <div className="input-group">
                       <label>
                         <FaPhoneAlt style={{ color: '#3b82f6' }} />
                         Phone Number
@@ -494,7 +498,7 @@ function NomineeCheckPage({ user }) {
                         maxLength={10}
                       />
                       {errors.phone && <div className="error-message"><FaExclamationTriangle />{errors.phone}</div>}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -510,7 +514,9 @@ function NomineeCheckPage({ user }) {
                       Upload Document *
                       <FaInfoCircle
                         style={{ color: '#9ca3af', fontSize: '1rem', cursor: 'help' }}
-                        title="Upload PDF, JPG, or PNG file (maximum 5MB). Ensure document is clear and readable."
+                        className="tooltip-icon"
+                        data-tooltip-id="tooltip-upload-doc"
+                        data-tooltip-content="Upload PDF, JPG, or PNG file (maximum 5MB). Ensure document is clear and readable."
                       />
                     </label>
 
@@ -555,6 +561,7 @@ function NomineeCheckPage({ user }) {
                       </div>
                     )}
                   </div>
+                  <ReactTooltip id="tooltip-upload-doc" openOnClick delayShow={0} />
                 </div>
 
                 <button

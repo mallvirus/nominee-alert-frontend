@@ -79,6 +79,23 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
     nomineeEmail: '',
     providerName: ''
   });
+  const [isAddressModalOpen, setAddressModalOpen] = useState(false);
+  const [addressSaving, setAddressSaving] = useState(false);
+  const [addressForm, setAddressForm] = useState({
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: ''
+  });
+  const [addressErrors, setAddressErrors] = useState({
+    addressLine1: '',
+    city: '',
+    state: '',
+    postalCode: ''
+  });
+  const [hasAddress, setHasAddress] = useState(false);
+  const [secureEnableRequested, setSecureEnableRequested] = useState(false);
 
   // Animated counter hook
   const useAnimatedCounter = (end, duration = 2000) => {
@@ -315,6 +332,15 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
   const handleSecureToggle = async (event) => {
     const newValue = event.target.checked;
     const prev = secureEnabled;
+
+    // If enabling and no address, block enable, open modal, and remember intent
+    if (newValue && !hasAddress) {
+      setSecureEnableRequested(true);
+      setSecureEnabled(false);
+      setAddressModalOpen(true);
+      return;
+    }
+
     setSecureEnabled(newValue);
     const token = localStorage.getItem('token');
     try {
@@ -361,6 +387,133 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
     // Clear error when user starts typing
     if (editErrors[field]) {
       setEditErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const fetchUserAddress = useCallback(async () => {
+    if (!user?.id) {
+      setHasAddress(false);
+      return;
+    }
+    const token = localStorage.getItem('token');
+    try {
+      const resp = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/address/${user.id}` , {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+      });
+      if (!resp.ok) {
+        setHasAddress(false);
+        return;
+      }
+      const json = await resp.json();
+      const a = json?.data || json;
+      const exists = Boolean(
+        a &&
+        String(a.addressLine1 || '').trim() &&
+        String(a.city || '').trim() &&
+        String(a.state || '').trim() &&
+        (String(a.postalCode || a.pincode || '').trim())
+      );
+      setHasAddress(exists);
+    } catch (e) {
+      console.error('Failed to fetch address:', e);
+      setHasAddress(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchUserAddress();
+  }, [fetchUserAddress]);
+
+  const validateAddress = (data) => {
+    const errs = { addressLine1: '', city: '', state: '', postalCode: '' };
+    if (!String(data.addressLine1 || '').trim()) errs.addressLine1 = 'Address Line 1 is required.';
+    if (!String(data.city || '').trim()) errs.city = 'City is required.';
+    if (!String(data.state || '').trim()) errs.state = 'State is required.';
+    const pin = String(data.postalCode || '').trim();
+    if (!pin) {
+      errs.postalCode = 'PIN/Postal code is required.';
+    } else if (!/^\d{6}$/.test(pin)) {
+      errs.postalCode = 'PIN code must be 6 digits.';
+    }
+    return errs;
+  };
+
+  const handleAddressInputChange = (field, value) => {
+    setAddressForm(prev => ({ ...prev, [field]: field === 'postalCode' ? value.replace(/\D/g, '').slice(0, 6) : value }));
+    if (addressErrors[field]) {
+      setAddressErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  // (Removed state/district/pincode dropdown logic per request)
+
+  const closeAddressModal = () => {
+    setAddressModalOpen(false);
+    setAddressForm({ addressLine1: '', addressLine2: '', city: '', state: '', postalCode: '' });
+    setAddressErrors({ addressLine1: '', city: '', state: '', postalCode: '' });
+    setSecureEnableRequested(false);
+  };
+
+  const handleSaveAddress = async () => {
+    const errs = validateAddress(addressForm);
+    setAddressErrors(errs);
+    const hasAnyError = Object.values(errs).some(Boolean);
+    if (hasAnyError) {
+      showNotification('Please fix the errors in the address form.', 'error');
+      return;
+    }
+
+    try {
+      setAddressSaving(true);
+      const token = localStorage.getItem('token');
+      const resp = await fetch(`${process.env.REACT_APP_HOST_SERVER}/api/address`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          userId: user?.id,
+          addressLine1: addressForm.addressLine1.trim(),
+          addressLine2: String(addressForm.addressLine2 || '').trim(),
+          city: addressForm.city.trim(),
+          state: addressForm.state.trim(),
+          postalCode: addressForm.postalCode.trim(),
+        }),
+      });
+      if (!resp.ok) {
+        throw new Error('Failed to save address');
+      }
+      await fetchUserAddress();
+      showNotification('Address saved successfully.', 'success');
+      // If user intended to enable secure mode, enable it now after successful address save
+      if (secureEnableRequested) {
+        try {
+          setSecureUpdating(true);
+          await axios.put(
+            `${process.env.REACT_APP_HOST_SERVER}/api/user/secure-mode`,
+            { isSecure: true, userId: user?.id },
+            { headers: { 'Authorization': `Bearer ${token}` }, timeout: 15000 }
+          );
+          setSecureEnabled(true);
+          setSecureEnableRequested(false);
+        } catch (e) {
+          console.error('Failed to enable secure mode after address save:', e);
+          showNotification('Secure Mode could not be enabled. Please try toggling again.', 'error');
+        } finally {
+          setSecureUpdating(false);
+        }
+      }
+      closeAddressModal();
+    } catch (e) {
+      console.error('Failed to save address:', e);
+      showNotification('Could not save address. Please try again.', 'error');
+    } finally {
+      setAddressSaving(false);
     }
   };
 
@@ -855,7 +1008,7 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
       Secure Mode
     </Typography>
     <Tooltip
-      title="When Secure Mode is ON, if any user or nominee is checked, we require manual verification before proceeding. A notification is not sent to the nominee immediately — it is sent only after the manual verification is completed."
+      title="When Secure Mode is ON, if any user or nominee is checked, we require manual verification before proceeding. A notification is not sent to the nominee immediately — it is sent only after the manual verification is completed. In this case we charge extra money from Nominee Checker."
       arrow
       placement="right"
       enterTouchDelay={0}
@@ -1352,6 +1505,115 @@ const Home = ({ user, onGoogleSignIn , onNavigateApplicationOverview, dashboardR
           <ReactTooltip id="tooltip-edit-phone" openOnClick delayShow={0} />
           <ReactTooltip id="tooltip-edit-doc" openOnClick delayShow={0} />
           <ReactTooltip id="tooltip-edit-provider" openOnClick delayShow={0} />
+        </Modal>
+
+        {/* Add Address Modal (on enabling Secure Mode) */}
+        <Modal
+          isOpen={isAddressModalOpen}
+          onRequestClose={closeAddressModal}
+          contentLabel="Add Address"
+          className="modal"
+          overlayClassName="modal-overlay"
+        >
+          <h2>
+            Add Address
+          </h2>
+          <div className="modal-form">
+            <label>
+              Address Line 1 *
+              <input
+                type="text"
+                placeholder="House/Flat, Street"
+                value={addressForm.addressLine1}
+                onChange={(e) => handleAddressInputChange('addressLine1', e.target.value)}
+                className={addressErrors.addressLine1 ? 'input-error' : ''}
+                disabled={addressSaving}
+                maxLength={120}
+              />
+              {addressErrors.addressLine1 && (
+                <div className="error-message">{addressErrors.addressLine1}</div>
+              )}
+            </label>
+
+            <label>
+              Address Line 2 (Optional)
+              <input
+                type="text"
+                placeholder="Area, Landmark"
+                value={addressForm.addressLine2}
+                onChange={(e) => handleAddressInputChange('addressLine2', e.target.value)}
+                disabled={addressSaving}
+                maxLength={120}
+              />
+            </label>
+
+            <label>
+              City *
+              <input
+                type="text"
+                placeholder="City"
+                value={addressForm.city}
+                onChange={(e) => handleAddressInputChange('city', e.target.value)}
+                className={addressErrors.city ? 'input-error' : ''}
+                disabled={addressSaving}
+                maxLength={60}
+              />
+              {addressErrors.city && (
+                <div className="error-message">{addressErrors.city}</div>
+              )}
+            </label>
+
+            <label>
+              State *
+              <input
+                type="text"
+                placeholder="State"
+                value={addressForm.state}
+                onChange={(e) => handleAddressInputChange('state', e.target.value)}
+                className={addressErrors.state ? 'input-error' : ''}
+                disabled={addressSaving}
+                maxLength={60}
+              />
+              {addressErrors.state && (
+                <div className="error-message">{addressErrors.state}</div>
+              )}
+            </label>
+
+            <label>
+              PIN Code *
+              <input
+                type="tel"
+                placeholder="6-digit PIN"
+                value={addressForm.postalCode}
+                onChange={(e) => handleAddressInputChange('postalCode', e.target.value)}
+                className={addressErrors.postalCode ? 'input-error' : ''}
+                disabled={addressSaving}
+                maxLength={6}
+              />
+              {addressErrors.postalCode && (
+                <div className="error-message">{addressErrors.postalCode}</div>
+              )}
+            </label>
+
+            <div className="modal-buttons">
+              <button
+                type="button"
+                className="add-btn"
+                onClick={handleSaveAddress}
+                disabled={addressSaving}
+              >
+                {addressSaving ? 'Saving...' : 'Save Address'}
+              </button>
+              <button
+                type="button"
+                className="cancel-btn"
+                onClick={closeAddressModal}
+                disabled={addressSaving}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </Modal>
       </section>
     </div>

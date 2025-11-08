@@ -72,7 +72,7 @@ const ApplicationOverview = ({ user, onLoginSuccess }) => {
           <HowItWorksCard 
             icon={<FaPaperPlane size={48} color="#f59e0b" />} 
             title="We Notify" 
-            description="Automatic alerts sent to your nominees via email and SMS when it matters." 
+            description="Automatic alerts sent to your nominees via email when it matters." 
           />
         </div>
       </section>
