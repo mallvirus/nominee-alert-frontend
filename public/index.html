@@ -4,13 +4,15 @@
   <meta charset="utf-8" />
   <link rel="icon" type="image/png" href="%PUBLIC_URL%/Logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#0b1f3b" />
   <meta
     name="description"
     content="KeepMyAsset is your trusted partner in securing your family’s financial future. Upload your insurance documents, assign nominees, and ensure your loved ones are automatically notified when it matters most — all with complete privacy and security."
   />
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/Logo.png" />
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json?v=2" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <!-- Open Graph Meta Tags for Social Sharing -->
   <meta property="og:title" content="KeepMyAsset" />
@@ -30,6 +32,26 @@
 </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- Branded preloader (prevents any default React logo flicker) -->
+    <style>
+      /* Inline to avoid FOUC */
+      #km-preloader{
+        position:fixed;inset:0;background:linear-gradient(135deg,#0f2e55,#0b1f3b);display:flex;align-items:center;justify-content:center;z-index:2147483647;
+        color:#eaf1ff;font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;transition:opacity .25s ease;
+      }
+      #km-preloader .box{display:flex;flex-direction:column;align-items:center;gap:14px}
+      #km-preloader .spinner{width:56px;height:56px;border:4px solid rgba(255,255,255,.25);border-top-color:#1f6fe5;border-radius:50%;animation:km-spin 1s linear infinite}
+      #km-preloader .brand{font-weight:700;letter-spacing:.3px}
+      #km-preloader .tag{font-weight:600;color:#d4af37;font-size:.95rem}
+      @keyframes km-spin{to{transform:rotate(360deg)}}
+    </style>
+    <div id="km-preloader" aria-hidden="true">
+      <div class="box">
+        <div class="spinner" role="progressbar" aria-label="Loading"></div>
+        <div class="brand">KeepMyAsset</div>
+        <div class="tag">Peace of mind, secured.</div>
+      </div>
+    </div>
     <div id="root"></div>
     <!--
       This HTML file is a template.
